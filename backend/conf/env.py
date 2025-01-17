@@ -2,23 +2,23 @@
 # ************** mysql数据库 配置  ************** #
 # ================================================= #
 # 数据库类型 MYSQL/SQLSERVER/SQLITE3/POSTGRESQL
-DATABASE_TYPE = "POSTGRESQL"
+DATABASE_TYPE = "MYSQL"
 # 数据库地址
-DATABASE_HOST = "127.0.0.1"
+DATABASE_HOST = "rm-2zeh0q2c0848c1c0h.mysql.rds.aliyuncs.com"
 # 数据库端口
-DATABASE_PORT = 5432
+DATABASE_PORT = 3306
 # 数据库用户名
-DATABASE_USER = "fuadmin"
+DATABASE_USER = "root"
 # 数据库密码
-DATABASE_PASSWORD = "fuadmin"
+DATABASE_PASSWORD = "weizhiyan@2029"
 # 数据库名
-DATABASE_NAME = "fuadmin2"
+DATABASE_NAME = "fuadmin"
 
 # ================================================= #
 # ************** redis配置，无redis 可不进行配置  ************** #
 # ================================================= #
 REDIS_PASSWORD = ''
-REDIS_HOST = '127.0.0.1'
+REDIS_HOST = 'r-2zeiq3ji7zu85njw5q.redis.rds.aliyuncs.com'
 REDIS_URL = f'redis://:{REDIS_PASSWORD or ""}@{REDIS_HOST}:6379'
 # ================================================= #
 # ************** 其他 配置  ************** #
