@@ -106,4 +106,14 @@ def test_generate_token():
 
 
 if __name__ == "__main__":
-    test_generate_token()
+    # test_generate_token()
+
+    decrypted = AESUtil.decrypt(
+        "VYPbs4tYrSv8Vgalq8NcNBBwwqPtugJf7xF4Rsr5Hrk2zRYd1xg9uUuMEO5/w71g/hy5W6gAdhs0wL37Vbge/qGDKpxTywoSAHpNaas3lSM9MvyUwmr4tTQPjBHQTYQA",
+        "75fa6cf7300033b477f5644110b8fcd7",
+        "907AcdEf2fCb17fb"
+    )
+    print("解密后的数据:", decrypted)
+
+
+
