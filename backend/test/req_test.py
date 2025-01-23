@@ -51,8 +51,7 @@ class BottleAPI:
             # 加密token
             token = '{"Uid":"11850"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
-
-            # 准备请求数据
+            #盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
 
