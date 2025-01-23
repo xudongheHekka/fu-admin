@@ -2,6 +2,7 @@ import requests
 import re
 import mysql.connector
 import json
+import random
 from datetime import datetime
 from typing import List, Dict
 
@@ -10,10 +11,10 @@ class NicknameGenerator:
     def __init__(self):
         # 数据库配置
         self.db_config = {
-            'host': 'localhost',
-            'user': 'your_username',
-            'password': 'your_password',
-            'database': 'your_database'
+            'host': 'rm-2ze2gje6no17082up.mysql.rds.aliyuncs.com',
+            'user': 'user',
+            'password': 'gMpg4gnVJ+c',
+            'database': 'user'
         }
 
         self.init_database()
@@ -27,7 +28,7 @@ class NicknameGenerator:
 
             # 创建昵称表
             create_nicknames_table = """
-            CREATE TABLE IF NOT EXISTS nicknames (
+            CREATE TABLE IF NOT EXISTS nicknames_ai (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 nickname VARCHAR(50) NOT NULL,
                 create_time DATETIME NOT NULL,
@@ -39,7 +40,7 @@ class NicknameGenerator:
 
             # 创建禁用词表
             create_forbidden_words_table = """
-            CREATE TABLE IF NOT EXISTS forbidden_words (
+            CREATE TABLE IF NOT EXISTS forbidden_words_ai (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 word VARCHAR(50) NOT NULL,
                 category VARCHAR(20) COMMENT '禁用词分类',
@@ -63,49 +64,190 @@ class NicknameGenerator:
                 cursor.close()
                 conn.close()
 
+    def init_forbidden_words(self, cursor):
+        """初始化基础禁用词"""
+        try:
+            # 检查是否已经有数据
+            cursor.execute("SELECT COUNT(*) FROM forbidden_words_ai")
+            count = cursor.fetchone()[0]
+
+            if count == 0:
+                # 基础禁用词列表
+                basic_forbidden_words = [
+                    ('小姐', '敏感词', '涉及不当内容'),
+                    ('天安门', '政治敏感', '政治敏感词'),
+                    ('色情', '敏感词', '涉及不当内容'),
+                    ('赌博', '敏感词', '涉及不当内容'),
+                    ('毒品', '敏感词', '涉及不当内容')
+                ]
+
+                insert_query = """
+                INSERT INTO forbidden_words_ai 
+                (word, category, description, create_time, update_time, status)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """
+
+                current_time = datetime.now()
+
+                for word, category, description in basic_forbidden_words:
+                    values = (
+                        word,
+                        category,
+                        description,
+                        current_time,
+                        current_time,
+                        1
+                    )
+                    cursor.execute(insert_query, values)
+
+        except mysql.connector.Error as err:
+            print(f"初始化禁用词错误: {err}")
+
+    def load_forbidden_words(self) -> List[Dict]:
+        """从数据库加载禁用词列表"""
+        try:
+            conn = mysql.connector.connect(**self.db_config)
+            cursor = conn.cursor(dictionary=True)
+
+            query = """
+            SELECT word, category, description 
+            FROM forbidden_words_ai 
+            WHERE status = 1
+            """
+
+            cursor.execute(query)
+            return cursor.fetchall()
+
+        except mysql.connector.Error as err:
+            print(f"加载禁用词错误: {err}")
+            return []
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
+
+    def validate_nickname(self, nickname: str) -> bool:
+        """验证昵称是否合法"""
+        if not nickname:
+            return False
+
+        # 检查长度
+        if len(nickname) > 12:
+            return False
+
+        # 检查是否包含英文
+        if re.search(r'[a-zA-Z]', nickname):
+            return False
+
+        # 检查禁用词
+        for word in self.forbidden_words:
+            if word['word'] in nickname:
+                return False
+
+        return True
+
+    def generate_fallback_nicknames(self, num_nicknames=10) -> List[str]:
+        """备选的昵称生成方法"""
+        adjectives = ['快乐', '阳光', '可爱', '温柔', '智慧', '勇敢', '善良', '开心', '活力', '文艺',
+                      '清新', '淡雅', '俏皮', '调皮', '萌萌', '甜甜', '暖暖', '安静', '优雅', '灵动']
+        nouns = ['小猫', '花儿', '星星', '月亮', '彩虹', '蝴蝶', '小鸟', '微风', '海浪', '云朵',
+                 '糖果', '奶茶', '小熊', '兔子', '年华', '精灵', '童话', '蒲公英', '向日葵', '樱花']
+        emojis = ['🌟', '🌈', '🌺', '🎵', '💫', '🌸', '✨', '💕', '🍀', '🌙',
+                  '🎨', '🌹', '🎭', '🎪', '🎠', '🎡', '🎢', '🎣', '🎮', '🎯']
+
+        nicknames = []
+        while len(nicknames) < num_nicknames:
+            adj = random.choice(adjectives)
+            noun = random.choice(nouns)
+            emoji = random.choice(emojis)
+
+            # 随机组合方式
+            patterns = [
+                f"{adj}{noun}",
+                f"{adj}{noun}{emoji}",
+                f"{emoji}{adj}{noun}",
+                f"{noun}{emoji}",
+                f"{adj}{emoji}"
+            ]
+
+            nickname = random.choice(patterns)
+            if self.validate_nickname(nickname):
+                nicknames.append(nickname)
+
+        return nicknames
+
     def generate_nicknames(self, num_nicknames=10):
         """生成昵称"""
-        url = "http://localhost:11434/api/generate"
-
-        prompt = f"""请生成{num_nicknames}个社交APP用户昵称，每个昵称独占一行，要求：
-        1. 每个昵称长度不超过12个字符
-        2. 可以包含表情符号
-        3. 必须是中文，不能包含英文
-        4. 不能生成空内容
-        请直接生成昵称，不要包含序号或其他说明文字。"""
-
-        payload = {
-            "model": "llama2",
-            "prompt": prompt,
-            "stream": False
-        }
-
         try:
-            response = requests.post(url, json=payload)
+            # 首先尝试使用API生成
+            url = "http://10.8.0.46:11434/api/generate"
+            prompt = f"""请生成{num_nicknames}个社交APP用户昵称，每个昵称独占一行，要求：
+            1. 每个昵称长度不超过12个字符
+            2. 可以包含表情符号
+            3. 必须是中文，不能包含英文
+            4. 不能生成空内容
+            请直接生成昵称，不要包含序号或其他说明文字。"""
+
+            payload = {
+                "model": "llama2",
+                "prompt": prompt,
+                "stream": False,
+                "format": "json"  # 添加format参数
+            }
+
+            headers = {
+                'Content-Type': 'application/json'
+            }
+
+            response = requests.post(url, json=payload, headers=headers)
+            print(f"API Response Status: {response.status_code}")  # 打印状态码
+            print(f"API Response Headers: {response.headers}")  # 打印响应头
+            print(f"API Response Content: {response.text}")  # 打印响应内容
+
             response.raise_for_status()
 
             result = response.json()
-            nicknames = result['response'].strip().split('\n')
+            if result.get('response'):
+                nicknames = result['response'].strip().split('\n')
+                valid_nicknames = [n.strip() for n in nicknames if self.validate_nickname(n.strip())]
+                if valid_nicknames:
+                    self.save_to_database(valid_nicknames, prompt)
+                    return valid_nicknames
 
-            # 过滤和验证昵称
-            valid_nicknames = []
-            for nickname in nicknames:
-                nickname = nickname.strip()
-                if self.validate_nickname(nickname):
-                    valid_nicknames.append(nickname)
-
-            # 保存到数据库
-            if valid_nicknames:
-                self.save_to_database(valid_nicknames, prompt)
-
-            return valid_nicknames
+            # 如果没有有效昵称，使用备选方法
+            print("API返回结果无效，使用备选方法生成昵称...")
+            nicknames = self.generate_fallback_nicknames(num_nicknames)
+            if nicknames:
+                self.save_to_database(nicknames, "使用备选方法生成")
+            return nicknames
 
         except requests.exceptions.RequestException as e:
             print(f"API请求错误: {e}")
-            return []
+            print(f"错误详情: {str(e)}")
+            # 使用备选方法
+            nicknames = self.generate_fallback_nicknames(num_nicknames)
+            if nicknames:
+                self.save_to_database(nicknames, "使用备选方法生成")
+            return nicknames
         except json.JSONDecodeError as e:
             print(f"JSON解析错误: {e}")
-            return []
+            print(f"响应内容: {response.text}")
+            # 使用备选方法
+            nicknames = self.generate_fallback_nicknames(num_nicknames)
+            if nicknames:
+                self.save_to_database(nicknames, "使用备选方法生成")
+            return nicknames
+        except Exception as e:
+            print(f"未预期的错误: {e}")
+            print(f"错误类型: {type(e)}")
+            print(f"错误详情: {str(e)}")
+            # 使用备选方法
+            nicknames = self.generate_fallback_nicknames(num_nicknames)
+            if nicknames:
+                self.save_to_database(nicknames, "使用备选方法生成")
+            return nicknames
+
+
 
     def save_to_database(self, nicknames: List[str], prompt: str, model: str = "llama2"):
         """保存昵称到数据库"""
@@ -114,7 +256,7 @@ class NicknameGenerator:
             cursor = conn.cursor()
 
             insert_query = """
-            INSERT INTO nicknames (nickname, create_time, model, prompt, status)
+            INSERT INTO nicknames_ai (nickname, create_time, model, prompt, status)
             VALUES (%s, %s, %s, %s, %s)
             """
 
@@ -147,7 +289,7 @@ class NicknameGenerator:
             cursor = conn.cursor(dictionary=True)
 
             query = """
-            SELECT * FROM nicknames 
+            SELECT * FROM nicknames_ai 
             WHERE status = 1 
             ORDER BY create_time DESC 
             LIMIT %s
@@ -171,7 +313,7 @@ class NicknameGenerator:
             cursor = conn.cursor()
 
             update_query = """
-            UPDATE nicknames 
+            UPDATE nicknames_ai 
             SET status = 0 
             WHERE id = %s
             """
@@ -183,6 +325,29 @@ class NicknameGenerator:
 
         except mysql.connector.Error as err:
             print(f"删除昵称错误: {err}")
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
+
+    def get_forbidden_words(self) -> List[Dict]:
+        """获取禁用词列表"""
+        try:
+            conn = mysql.connector.connect(**self.db_config)
+            cursor = conn.cursor(dictionary=True)
+
+            query = """
+            SELECT * FROM forbidden_words_ai 
+            WHERE status = 1 
+            ORDER BY create_time DESC
+            """
+
+            cursor.execute(query)
+            return cursor.fetchall()
+
+        except mysql.connector.Error as err:
+            print(f"获取禁用词列表错误: {err}")
+            return []
         finally:
             if 'conn' in locals() and conn.is_connected():
                 cursor.close()
