@@ -13,9 +13,9 @@ class NicknameGenerator:
     def __init__(self):
         # 数据库配置
         self.db_config = {
-            'host': 'rm-2zeh0q2c0848c1c0heo.mysql.rds.aliyuncs.com',
-            'user': 'stage_root',
-            'password': 'iQd5u0rJ39',
+            'host': 'rm-2ze2gje6no17082up.mysql.rds.aliyuncs.com',
+            'user': 'user',
+            'password': 'gMpg4gnVJ+c',
             'database': 'user'
         }
 
