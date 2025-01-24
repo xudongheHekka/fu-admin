@@ -194,7 +194,7 @@ class NicknameGenerator:
             2. 可以适当使用emoji表情符号，但不是必须
             3. 只使用中文，不能包含英文
             4. 可以使用诗意、古风、可爱风格
-            5. 直接生成简短昵称，不要添加任何前缀
+            5. 直接生成简短昵称，不要添加任何前缀、破折号或其他标点符号
             6. 严禁使用以下词语（包括同音字或谐音）：{forbidden_words_str}
 
         示例参考：
@@ -261,7 +261,14 @@ class NicknameGenerator:
                 valid_nicknames = []
                 for nickname in nicknames:
                     # 清理空白字符和可能的标点符号
-                    cleaned_nickname = nickname.strip().strip('.,。，、').strip()
+                    # cleaned_nickname = nickname.strip().strip('.,。，、').strip()
+                    # 增强清理逻辑，移除 '-' 和其他不需要的符号
+                    cleaned_nickname = nickname.strip()
+                    # 移除常见的标点符号和特殊字符
+                    cleaned_nickname = re.sub(r'[-.,。，、\s]', '', cleaned_nickname)
+                    # 移除可能的序号（如果有的话）
+                    cleaned_nickname = re.sub(r'^\d+[.、]?\s*', '', cleaned_nickname)
+
                     if cleaned_nickname and self.validate_nickname(cleaned_nickname):
                         valid_nicknames.append(cleaned_nickname)
 
