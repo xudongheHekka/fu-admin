@@ -124,7 +124,7 @@ class BottleAPI:
                     self.success_count += 1
                     # 解密响应数据
                     decrypted_response = self.decrypt(response.text, self.CONTENT_KEY, self.CONTENT_IV)
-                    print(f"Thread {threading.current_thread().name} - Success")
+                    print(f"Thread {threading.current_thread().name} - Success",decrypted_response)
                     return decrypted_response
                 else:
                     self.fail_count += 1
