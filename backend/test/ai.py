@@ -179,20 +179,19 @@ class NicknameGenerator:
     def generate_nicknames(self, num_nicknames=10):
         """生成昵称"""
         try:
-            # 首先尝试使用API生成
             url = "http://10.8.0.46:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个社交APP用户昵称，每个昵称独占一行，要求：
             1. 每个昵称长度不超过12个字符
             2. 可以包含表情符号
             3. 必须是中文，不能包含英文
-            4. 不能生成空内容
-            请直接生成昵称，不要包含序号或其他说明文字。"""
+            4. 可以使用王者荣耀、吃鸡等热门游戏昵称
+            5. 不能生成空内容
+            请直接生成昵称列表，每行一个昵称，不要使用JSON格式。"""
 
             payload = {
-                "model": "llama2",
+                "model": "qwen2",  # 更新为正确的模型名称
                 "prompt": prompt,
-                "stream": False,
-                "format": "json"  # 添加format参数
+                "stream": False
             }
 
             headers = {
@@ -200,16 +199,23 @@ class NicknameGenerator:
             }
 
             response = requests.post(url, json=payload, headers=headers)
-            print(f"API Response Status: {response.status_code}")  # 打印状态码
-            print(f"API Response Headers: {response.headers}")  # 打印响应头
-            print(f"API Response Content: {response.text}")  # 打印响应内容
-
             response.raise_for_status()
 
             result = response.json()
             if result.get('response'):
-                nicknames = result['response'].strip().split('\n')
-                valid_nicknames = [n.strip() for n in nicknames if self.validate_nickname(n.strip())]
+                # 清理响应文本
+                response_text = result['response']
+                # 移除可能的JSON格式符号
+                response_text = response_text.replace('{', '').replace('}', '')
+                response_text = response_text.replace('"', '')
+                response_text = response_text.replace(':', '\n')
+                response_text = response_text.replace(',', '\n')
+
+                # 分割成行并清理
+                nicknames = [line.strip() for line in response_text.split('\n')]
+                # 过滤掉空行和无效行
+                valid_nicknames = [n for n in nicknames if n and self.validate_nickname(n)]
+
                 if valid_nicknames:
                     self.save_to_database(valid_nicknames, prompt)
                     return valid_nicknames
@@ -221,24 +227,8 @@ class NicknameGenerator:
                 self.save_to_database(nicknames, "使用备选方法生成")
             return nicknames
 
-        except requests.exceptions.RequestException as e:
-            print(f"API请求错误: {e}")
-            print(f"错误详情: {str(e)}")
-            # 使用备选方法
-            nicknames = self.generate_fallback_nicknames(num_nicknames)
-            if nicknames:
-                self.save_to_database(nicknames, "使用备选方法生成")
-            return nicknames
-        except json.JSONDecodeError as e:
-            print(f"JSON解析错误: {e}")
-            print(f"响应内容: {response.text}")
-            # 使用备选方法
-            nicknames = self.generate_fallback_nicknames(num_nicknames)
-            if nicknames:
-                self.save_to_database(nicknames, "使用备选方法生成")
-            return nicknames
         except Exception as e:
-            print(f"未预期的错误: {e}")
+            print(f"生成昵称时发生错误: {e}")
             print(f"错误类型: {type(e)}")
             print(f"错误详情: {str(e)}")
             # 使用备选方法
@@ -246,8 +236,6 @@ class NicknameGenerator:
             if nicknames:
                 self.save_to_database(nicknames, "使用备选方法生成")
             return nicknames
-
-
 
     def save_to_database(self, nicknames: List[str], prompt: str, model: str = "llama2"):
         """保存昵称到数据库"""
