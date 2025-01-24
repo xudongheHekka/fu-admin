@@ -191,13 +191,13 @@ class NicknameGenerator:
             url = "http://10.8.0.46:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个社交APP用户昵称，每个昵称独占一行，要求：
             1. 每个昵称长度不超过12个字符
-            2. 可以包含表情符号
+            2. 可以包含emoji表情符号
             3. 必须是中文，不能包含英文
             4. 可以使用王者荣耀、吃鸡等热门游戏昵称
             5. 不能生成空内容
             6. 严禁使用以下词语（包括同音字或谐音）：{forbidden_words_str}
 
-            请直接生成昵称列表，每行一个昵称，不要使用JSON格式。"""
+            请直接生成昵称，每行一个，不要添加序号，不要使用任何标点符号。"""
 
             payload = {
                 "model": "qwen2",
@@ -214,18 +214,15 @@ class NicknameGenerator:
 
             result = response.json()
             if result.get('response'):
-                # 清理响应文本
-                response_text = result['response']
-                # 移除可能的JSON格式符号
-                response_text = response_text.replace('{', '').replace('}', '')
-                response_text = response_text.replace('"', '')
-                response_text = response_text.replace(':', '\n')
-                response_text = response_text.replace(',', '\n')
-
-                # 分割成行并清理
-                nicknames = [line.strip() for line in response_text.split('\n')]
-                # 过滤掉空行和无效行
-                valid_nicknames = [n for n in nicknames if n and self.validate_nickname(n)]
+                # 清理响应文本，直接按换行符分割
+                nicknames = result['response'].strip().split('\n')
+                # 清理每个昵称并验证
+                valid_nicknames = []
+                for nickname in nicknames:
+                    # 清理空白字符和可能的标点符号
+                    cleaned_nickname = nickname.strip().strip('.,。，、').strip()
+                    if cleaned_nickname and self.validate_nickname(cleaned_nickname):
+                        valid_nicknames.append(cleaned_nickname)
 
                 if valid_nicknames:
                     self.save_to_database(valid_nicknames, prompt)
@@ -373,7 +370,7 @@ def main():
 
     # 生成新昵称
     print("生成新昵称...")
-    nicknames = generator.generate_nicknames(5)
+    nicknames = generator.generate_nicknames(50)
     print("生成的昵称：")
     for nickname in nicknames:
         print(nickname)
