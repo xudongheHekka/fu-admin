@@ -1,4 +1,5 @@
 import json
+import random
 import time
 import hashlib
 import base64
@@ -55,29 +56,53 @@ class BottleAPI:
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
 
+            # request_body = {
+            #     "is_pirated": 0,
+            #     "idfa": "F7A12724-15EC-4A03-9379-13DED3C85DAC",
+            #     "is_nim": 1,
+            #     "req_rand": 7861,
+            #     "stid": "jdCqgB7AYoABoiKVzEw9yg==",
+            #     "is_simulator": 0,
+            #     "app_id": "1",
+            #     "timet": 1725706987,
+            #     "os": "ios",
+            #     "os_ver": "15.5",
+            #     "udid": "1e5bdf3a353f3f21d8aa9320631fea970418821f",
+            #     "appname": "bottle",
+            #     "ver": "7.9.9",
+            #     "token": encrypted_token,
+            #     "ts": timestamp,
+            #     "idfv": "0CEB3504-7A47-43F7-97E2-636508B2BF87",
+            #     "is_jailbroken": 0,
+            #     "app_type": "1",
+            #     "p_model": "iPhone8,1",
+            #     "device_jb": 0,
+            #     "timew": 1725706987,
+            #     "umid": "bd9e85cdb1b1d1e2eb32c276bd16879f"
+            # }
             request_body = {
                 "is_pirated": 0,
-                "idfa": "F7A12724-15EC-4A03-9379-13DED3C85DAC",
+                "idfa": "2F6D549E-4AE7-4360-9AEC-F80132D88485",
+                "ts": timestamp,
                 "is_nim": 1,
-                "req_rand": 7861,
-                "stid": "jdCqgB7AYoABoiKVzEw9yg==",
+                "req_rand": random.randint(1000, 9999),
+                "stid": "l8ir5/K+T4Hv0Y6zB2jU9w==",
                 "is_simulator": 0,
                 "app_id": "1",
-                "timet": 1725706987,
+                "timet": 1737698294,
                 "os": "ios",
-                "os_ver": "15.5",
-                "udid": "1e5bdf3a353f3f21d8aa9320631fea970418821f",
+                "os_ver": "16.1.1",
+                "udid": "60f1f09b42a58393ae7a322c3ddd05011b5aa415",
                 "appname": "bottle",
-                "ver": "7.9.9",
+                "ver": "7.10.0",
                 "token": encrypted_token,
-                "ts": timestamp,
-                "idfv": "0CEB3504-7A47-43F7-97E2-636508B2BF87",
+                "idfv": "30E1CAAB-9E37-45F9-9306-C70AA9C02004",
                 "is_jailbroken": 0,
                 "app_type": "1",
-                "p_model": "iPhone8,1",
+                "p_model": "iPhone14,5",
                 "device_jb": 0,
-                "timew": 1725706987,
-                "umid": "bd9e85cdb1b1d1e2eb32c276bd16879f"
+                "timew": 1737698294,
+                "umid": "bca74d94c291c3dbccd891289dfa40"
             }
 
             # 生成签名
@@ -91,7 +116,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/post/wall/top"
+            url = "https://stage-api-meeting.weizhiyanchina.com/config/oss_token"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             with self.lock:
