@@ -1,3 +1,5 @@
+import time
+
 import requests
 import re
 import mysql.connector
@@ -392,4 +394,24 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    while True:
+        try:
+            print("\n" + "=" * 50)
+            print(f"开始执行 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print("=" * 50)
+
+            main()
+
+            # 添加间隔时间
+            print("\n等待5秒后重新开始...")
+            time.sleep(1)
+
+        except KeyboardInterrupt:
+            print("\n检测到 Ctrl+C，程序退出...")
+            break
+        except Exception as e:
+            print(f"\n发生错误: {type(e).__name__}")
+            print(f"错误详情: {str(e)}")
+            print("等待3秒后重试...")
+            time.sleep(3)
+            continue
