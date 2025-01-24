@@ -179,6 +179,13 @@ class NicknameGenerator:
     def generate_nicknames(self, num_nicknames=10):
         """生成昵称"""
         try:
+            # 获取最新的违禁词列表
+            self.forbidden_words = self.load_forbidden_words()
+
+            # 将违禁词转换为字符串列表
+            forbidden_words_list = [word['word'] for word in self.forbidden_words]
+            forbidden_words_str = '、'.join(forbidden_words_list)
+
             url = "http://10.8.0.46:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个社交APP用户昵称，每个昵称独占一行，要求：
             1. 每个昵称长度不超过12个字符
@@ -186,10 +193,12 @@ class NicknameGenerator:
             3. 必须是中文，不能包含英文
             4. 可以使用王者荣耀、吃鸡等热门游戏昵称
             5. 不能生成空内容
+            6. 严禁使用以下词语（包括同音字或谐音）：{forbidden_words_str}
+
             请直接生成昵称列表，每行一个昵称，不要使用JSON格式。"""
 
             payload = {
-                "model": "qwen2",  # 更新为正确的模型名称
+                "model": "qwen2",
                 "prompt": prompt,
                 "stream": False
             }
@@ -236,6 +245,7 @@ class NicknameGenerator:
             if nicknames:
                 self.save_to_database(nicknames, "使用备选方法生成")
             return nicknames
+
 
     def save_to_database(self, nicknames: List[str], prompt: str, model: str = "llama2"):
         """保存昵称到数据库"""
