@@ -177,4 +177,4 @@ class BottleAPI:
 if __name__ == "__main__":
     api = BottleAPI()
     # 设置并发线程数和测试时间
-    api.pressure_test(num_threads=10, duration=5)
+    api.pressure_test(num_threads=20, duration=600)
