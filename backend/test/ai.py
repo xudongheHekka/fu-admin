@@ -11,13 +11,13 @@ class NicknameGenerator:
     def __init__(self):
         # 数据库配置
         self.db_config = {
-            'host': 'rm-2ze2gje6no17082up.mysql.rds.aliyuncs.com',
-            'user': 'user',
-            'password': 'gMpg4gnVJ+c',
+            'host': 'rm-2zeh0q2c0848c1c0heo.mysql.rds.aliyuncs.com',
+            'user': 'stage_root',
+            'password': 'iQd5u0rJ39',
             'database': 'user'
         }
 
-        self.init_database()
+        # self.init_database()
         self.forbidden_words = self.load_forbidden_words()
 
     def init_database(self):
@@ -246,7 +246,6 @@ class NicknameGenerator:
                 self.save_to_database(nicknames, "使用备选方法生成")
             return nicknames
 
-
     def save_to_database(self, nicknames: List[str], prompt: str, model: str = "llama2"):
         """保存昵称到数据库"""
         try:
@@ -254,27 +253,41 @@ class NicknameGenerator:
             cursor = conn.cursor()
 
             insert_query = """
-            INSERT INTO nicknames_ai (nickname, create_time, model, prompt, status)
+            INSERT INTO config_nickname (nickname, create_time, model, status, gender)
             VALUES (%s, %s, %s, %s, %s)
             """
 
             current_time = datetime.now()
+            successful_count = 0
+            failed_count = 0
 
             for nickname in nicknames:
-                values = (
-                    nickname,
-                    current_time,
-                    model,
-                    prompt,
-                    1
-                )
-                cursor.execute(insert_query, values)
+                try:
+                    values = (
+                        nickname,
+                        current_time,
+                        model,
+                        0,
+                        1
+                    )
+                    cursor.execute(insert_query, values)
+                    conn.commit()  # 每次插入后立即提交
+                    successful_count += 1
+                except mysql.connector.Error as insert_err:
+                    if insert_err.errno == 1062:  # 重复键错误
+                        failed_count += 1
+                        print(f"昵称 '{nickname}' 已存在，跳过")
+                        continue
+                    else:
+                        # 其他类型的错误，打印错误信息并继续
+                        print(f"插入昵称 '{nickname}' 时发生错误: {insert_err}")
+                        failed_count += 1
+                        continue
 
-            conn.commit()
-            print(f"成功保存 {len(nicknames)} 个昵称到数据库")
+            print(f"处理完成：成功插入 {successful_count} 个昵称，失败 {failed_count} 个")
 
         except mysql.connector.Error as err:
-            print(f"数据库操作错误: {err}")
+            print(f"数据库连接错误: {err}")
         finally:
             if 'conn' in locals() and conn.is_connected():
                 cursor.close()
@@ -364,11 +377,11 @@ def main():
         print(nickname)
 
     # 获取历史生成的昵称
-    print("\n获取历史昵称...")
-    historical_nicknames = generator.get_generated_nicknames(10)
-    print("最近生成的10个昵称：")
-    for record in historical_nicknames:
-        print(f"ID: {record['id']}, 昵称: {record['nickname']}, 生成时间: {record['create_time']}")
+    # print("\n获取历史昵称...")
+    # historical_nicknames = generator.get_generated_nicknames(10)
+    # print("最近生成的10个昵称：")
+    # for record in historical_nicknames:
+    #     print(f"ID: {record['id']}, 昵称: {record['nickname']}, 生成时间: {record['create_time']}")
 
     # 获取禁用词列表
     print("\n获取禁用词列表...")
