@@ -267,9 +267,10 @@ class NicknameGenerator:
             - 不加任何额外修饰
             """
 
-
+            models = ["qwen2", "nezahatkorkmaz/deepseek-v3"]
+            selected_model = random.choice(models)
             payload = {
-                "model": "qwen2",
+                "model": selected_model,
                 "prompt": prompt,
                 "stream": False
             }
