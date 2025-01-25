@@ -477,7 +477,7 @@ if __name__ == "__main__":
             main()
 
             # 添加间隔时间
-            print("\n等待5秒后重新开始...")
+            print("\n等待1秒后重新开始...")
             time.sleep(1)
 
         except KeyboardInterrupt:
