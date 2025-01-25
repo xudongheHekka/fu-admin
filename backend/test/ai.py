@@ -188,7 +188,7 @@ class NicknameGenerator:
             forbidden_words_list = [word['word'] for word in self.forbidden_words]
             forbidden_words_str = '、'.join(forbidden_words_list)
 
-            url = "http://10.8.0.46:11434/api/generate"
+            url = "http://10.8.0.48:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个中文昵称，要求：
             1. 字数限制：3-8个字
             2. 风格要求：简洁优雅，富有创意
@@ -302,7 +302,7 @@ class NicknameGenerator:
                         valid_nicknames.append(cleaned_nickname)
 
                 if valid_nicknames:
-                    self.save_to_database(valid_nicknames, prompt)
+                    self.save_to_database(valid_nicknames, selected_model)
                     return valid_nicknames
 
             # 如果没有有效昵称，使用备选方法
@@ -322,7 +322,7 @@ class NicknameGenerator:
                 self.save_to_database(nicknames, "使用备选方法生成")
             return nicknames
 
-    def save_to_database(self, nicknames: List[str], prompt: str, model: str = "llama2"):
+    def save_to_database(self, nicknames: List[str], model: str = "llama2"):
         """保存昵称到数据库"""
         try:
             conn = mysql.connector.connect(**self.db_config)
