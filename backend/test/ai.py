@@ -188,7 +188,7 @@ class NicknameGenerator:
             forbidden_words_list = [word['word'] for word in self.forbidden_words]
             forbidden_words_str = '、'.join(forbidden_words_list)
 
-            url = "http://10.8.0.48:11434/api/generate"
+            url = "http://192.168.0.128:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个中文昵称，要求：
             1. 字数限制：3-8个字
             2. 风格要求：简洁优雅，富有创意
