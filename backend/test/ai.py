@@ -188,31 +188,45 @@ class NicknameGenerator:
             forbidden_words_list = [word['word'] for word in self.forbidden_words]
             forbidden_words_str = '、'.join(forbidden_words_list)
 
-            url = "http://192.168.0.128:11434/api/generate"
+            url = "http://127.0.0.1:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个中文昵称，要求：
-            1. 字数限制：3-8个字
+            1. 字数限制：3-12个字
             2. 风格要求：简洁优雅，富有创意
             3. 可选装饰：适当使用emoji表情
             4. 禁止内容：
                - 不使用英文字母和数字
+               - 避免使用敏感词或不雅词汇
                - 不使用任何标点符号
                - 不使用以下词语及谐音：{forbidden_words_str}
 
             参考示例：
-
-            游戏昵称
-            🎮战神归来
-            无敌小将
+            
+            
+            王者荣耀风格
             ⚔️剑舞红尘
-            绝地枪王
-            🎯神射手
-            荣耀王者
-            🎲谋略大师
-            开黑达人
-            ⚡疾风剑豪
+            荣耀归来
             🏹弓箭少女
-
-            社交软件
+            无敌战神
+            🔥烈焰狂徒
+            疾风剑豪
+            🌟星辰之光
+            冷月无双
+            🛡️守护之刃
+            影舞者
+            
+            和平精英（吃鸡）风格
+            🎯神枪手
+            绝地求生
+            ⚡疾风狙击手
+            荣耀枪王
+            🌪️孤狼突击
+            黑夜猎手
+            🪖钢铁意志
+            狙击先锋
+            🔥火力全开
+            战地狂徒
+            
+            社交软件风格
             🌸甜心教主
             可爱多多
             🎀萌系少女
@@ -223,8 +237,8 @@ class NicknameGenerator:
             人间真香
             ✨魅力超群
             霸气小妞
-
-            文艺清新
+            
+            文艺清新风格
             🍵茶香书韵
             半窗疏影
             🎋竹语浅歌
@@ -235,8 +249,8 @@ class NicknameGenerator:
             云天墨客
             📚书香门第
             诗意江南
-
-            日常生活
+            
+            日常生活风格
             🥤可乐冰
             暖阳小屋
             🌞早安打工
@@ -247,8 +261,8 @@ class NicknameGenerator:
             睡到自然
             🎵音乐达人
             运动健将
-
-            个性标签
+            
+            个性标签风格
             💫追梦人
             独行侠
             🌊深海漫游
@@ -346,13 +360,38 @@ class NicknameGenerator:
                         0,
                         1
                     )
-                    cursor.execute(insert_query, values)
-                    conn.commit()  # 每次插入后立即提交
-                    successful_count += 1
+                    # print("nicknamenicknamenicknamenicknamenickname  ",nickname)
+                    url = "http://172.17.163.138:8081/internal/text/check"
+                    payload = {
+                        "body": nickname,
+                        "replace": False,
+                        "without_ai": True,
+                        "without_keyword": False,
+                        "service": 2
+                    }
+                    try:
+                        # 发起 POST 请求
+                        response = requests.post(url, json=payload)
+                        response.raise_for_status()  # 检查请求是否成功
+
+                        # 处理响应
+                        result = response.json()
+                        # print("响应结果:", result)
+
+                        # 检查 category 字段
+                        category = result.get("data").get("category",-1)  # 默认值为 -1，表示未找到
+                        if category == 0:
+                            cursor.execute(insert_query, values)
+                            conn.commit()  # 每次插入后立即提交
+                            successful_count += 1
+                        else:
+                            print("结果不正常",category,nickname)
+                    except requests.RequestException as e:
+                        print(f"请求错误: {e}")
                 except mysql.connector.Error as insert_err:
                     if insert_err.errno == 1062:  # 重复键错误
                         failed_count += 1
-                        print(f"昵称 '{nickname}' 已存在，跳过")
+                       #  print(f"昵称 '{nickname}' 已存在，跳过")
                         continue
                     else:
                         # 其他类型的错误，打印错误信息并继续
@@ -477,8 +516,8 @@ if __name__ == "__main__":
             main()
 
             # 添加间隔时间
-            print("\n等待1秒后重新开始...")
-            time.sleep(1)
+            print("\n等待3秒后重新开始...")
+            time.sleep(3)
 
         except KeyboardInterrupt:
             print("\n检测到 Ctrl+C，程序退出...")
