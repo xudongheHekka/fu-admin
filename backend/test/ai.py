@@ -1,12 +1,11 @@
 import time
-
 import requests
 import re
 import mysql.connector
-import json
 import random
 from datetime import datetime
 from typing import List, Dict
+from contextlib import contextmanager
 
 
 class NicknameGenerator:
@@ -19,91 +18,22 @@ class NicknameGenerator:
             'database': 'user'
         }
 
-        # self.init_database()
+        # 加载禁用词
         self.forbidden_words = self.load_forbidden_words()
 
-    def init_database(self):
-        """初始化数据库表"""
+    @contextmanager
+    def db_connection(self):
+        """上下文管理器，用于管理数据库连接"""
+        conn = None
         try:
             conn = mysql.connector.connect(**self.db_config)
-            cursor = conn.cursor()
-
-            # 创建昵称表
-            create_nicknames_table = """
-            CREATE TABLE IF NOT EXISTS nicknames_ai (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                nickname VARCHAR(50) NOT NULL,
-                create_time DATETIME NOT NULL,
-                model VARCHAR(50) NOT NULL,
-                prompt TEXT,
-                status TINYINT DEFAULT 1 COMMENT '1:有效 0:无效'
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            """
-
-            # 创建禁用词表
-            create_forbidden_words_table = """
-            CREATE TABLE IF NOT EXISTS forbidden_words_ai (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                word VARCHAR(50) NOT NULL,
-                category VARCHAR(20) COMMENT '禁用词分类',
-                description TEXT COMMENT '说明',
-                create_time DATETIME NOT NULL,
-                update_time DATETIME NOT NULL,
-                status TINYINT DEFAULT 1 COMMENT '1:有效 0:无效'
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            """
-
-            cursor.execute(create_nicknames_table)
-            cursor.execute(create_forbidden_words_table)
-
-            self.init_forbidden_words(cursor)
-            conn.commit()
-
+            yield conn
         except mysql.connector.Error as err:
-            print(f"数据库初始化错误: {err}")
+            print(f"数据库连接错误: {err}")
+            raise
         finally:
-            if 'conn' in locals() and conn.is_connected():
-                cursor.close()
+            if conn and conn.is_connected():
                 conn.close()
-
-    def init_forbidden_words(self, cursor):
-        """初始化基础禁用词"""
-        try:
-            # 检查是否已经有数据
-            cursor.execute("SELECT COUNT(*) FROM forbidden_words_ai")
-            count = cursor.fetchone()[0]
-
-            if count == 0:
-                # 基础禁用词列表
-                basic_forbidden_words = [
-                    ('小姐', '敏感词', '涉及不当内容'),
-                    ('天安门', '政治敏感', '政治敏感词'),
-                    ('色情', '敏感词', '涉及不当内容'),
-                    ('赌博', '敏感词', '涉及不当内容'),
-                    ('毒品', '敏感词', '涉及不当内容')
-                ]
-
-                insert_query = """
-                INSERT INTO forbidden_words_ai 
-                (word, category, description, create_time, update_time, status)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """
-
-                current_time = datetime.now()
-
-                for word, category, description in basic_forbidden_words:
-                    values = (
-                        word,
-                        category,
-                        description,
-                        current_time,
-                        current_time,
-                        1
-                    )
-                    cursor.execute(insert_query, values)
-
-        except mysql.connector.Error as err:
-            print(f"初始化禁用词错误: {err}")
 
     def load_forbidden_words(self) -> List[Dict]:
         """从数据库加载禁用词列表"""
@@ -199,100 +129,6 @@ class NicknameGenerator:
                - 避免使用敏感词或不雅词汇
                - 不使用任何标点符号
                - 不使用以下词语及谐音：{forbidden_words_str}
-
-            参考示例：
-
-
-            🔥 热门风格（结合当下流行元素）
-            🏀 篮球巨星
-            🎮 电竞王者
-            📱 科技达人
-            🍵 茶艺大师
-            🎵 音乐狂人
-            📚 知识博主
-            📸 摄影大师
-            🌍 旅行达人
-            🍜 美食探店
-            💰 理财高手
-
-            🌟 社交平台风格
-            🌸 甜心教主
-            🎀 萌系少女
-            💫 闪耀之星
-            🦋 蝶舞翩翩
-            ✨ 魅力超群
-            💎 高冷女神
-            👑 霸气小妞
-            🌈 彩虹女孩
-            🍀 幸运星
-            🌙 月光少女
-
-            🎭 个性标签风格
-            💫 追梦人
-            🌊 深海漫游
-            ⭐ 闪耀之星
-            🎪 马戏团长
-            🌪️ 疾风少年
-            🌌 星空旅者
-            🎨 艺术狂人
-            🔥 烈焰战士
-            🛡️ 守护骑士
-            🌿 自然之子
-
-            📖 文艺清新风格
-            🍵 茶香书韵
-            🎋 竹语浅歌
-            🌊 墨香书生
-            🎭 戏子书生
-            📚 书香门第
-            🌙 半窗疏影
-            🌿 清风徐来
-            🌸 诗意江南
-            🌾 田园诗人
-            ☁️ 云中漫步
-
-            🎮 游戏风格
-            ⚔️ 剑舞红尘
-            🏹 弓箭少女
-            🔥 烈焰狂徒
-            🌟 星辰之光
-            🛡️ 守护之刃
-            🎯 神枪手
-            ⚡ 疾风狙击手
-            🌪️ 孤狼突击
-            🪖 钢铁意志
-
-            🏆 竞技体育风格
-            🏅 金牌选手
-            ⚽ 足球巨星
-            🏸 羽毛球王
-            🏊 游泳健将
-            🏃 马拉松达人
-            🏋️ 健身狂魔
-            🚴 骑行高手
-            🥋 武术大师
-            🥊 拳击冠军
-            🏇 马术骑士
-
-            💼 职场精英风格
-            📊 数据分析师
-            💻 代码大师
-            📈 投资顾问
-            🎓 学术大咖
-            📝 文案高手
-            🎤 演讲达人
-            📦 供应链专家
-            📋 项目管理
-            📌 设计师
-            📅 时间管理
-
-
-
-            请直接输出昵称，每行一个，确保：
-            - 不加序号
-            - 不加任何分类标签
-            - 不加任何标点符号
-            - 不加任何额外修饰
             """
 
             models = ["qwen2", "nezahatkorkmaz/deepseek-v3"]
@@ -318,8 +154,6 @@ class NicknameGenerator:
                 valid_nicknames = []
                 for nickname in nicknames:
                     # 清理空白字符和可能的标点符号
-                    # cleaned_nickname = nickname.strip().strip('.,。，、').strip()
-                    # 增强清理逻辑，移除 '-' 和其他不需要的符号
                     cleaned_nickname = nickname.strip()
                     # 移除常见的标点符号和特殊字符
                     cleaned_nickname = re.sub(r'[-.,。，、\s]', '', cleaned_nickname)
@@ -417,31 +251,6 @@ class NicknameGenerator:
         except Exception as e:
             print(f"保存昵称到数据库时发生未知错误: {e}")
 
-
-    def get_generated_nicknames(self, limit: int = 100) -> List[Dict]:
-        """获取已生成的昵称列表"""
-        try:
-            conn = mysql.connector.connect(**self.db_config)
-            cursor = conn.cursor(dictionary=True)
-
-            query = """
-            SELECT * FROM nicknames_ai 
-            WHERE status = 1 
-            ORDER BY create_time DESC 
-            LIMIT %s
-            """
-
-            cursor.execute(query, (limit,))
-            return cursor.fetchall()
-
-        except mysql.connector.Error as err:
-            print(f"获取昵称列表错误: {err}")
-            return []
-        finally:
-            if 'conn' in locals() and conn.is_connected():
-                cursor.close()
-                conn.close()
-
     def get_nickname(self, name: str) -> bool:
         """通过 name 查询 user 表，判断是否存在匹配的记录"""
         try:
@@ -471,31 +280,6 @@ class NicknameGenerator:
                 conn.close()
 
 
-
-    def get_forbidden_words(self) -> List[Dict]:
-        """获取禁用词列表"""
-        try:
-            conn = mysql.connector.connect(**self.db_config)
-            cursor = conn.cursor(dictionary=True)
-
-            query = """
-            SELECT * FROM forbidden_words_ai 
-            WHERE status = 1 
-            ORDER BY create_time DESC
-            """
-
-            cursor.execute(query)
-            return cursor.fetchall()
-
-        except mysql.connector.Error as err:
-            print(f"获取禁用词列表错误: {err}")
-            return []
-        finally:
-            if 'conn' in locals() and conn.is_connected():
-                cursor.close()
-                conn.close()
-
-
 def main():
     """主函数：演示使用示例"""
     generator = NicknameGenerator()
@@ -507,16 +291,9 @@ def main():
     for nickname in nicknames:
         print(nickname)
 
-    # 获取历史生成的昵称
-    # print("\n获取历史昵称...")
-    # historical_nicknames = generator.get_generated_nicknames(10)
-    # print("最近生成的10个昵称：")
-    # for record in historical_nicknames:
-    #     print(f"ID: {record['id']}, 昵称: {record['nickname']}, 生成时间: {record['create_time']}")
-
     # 获取禁用词列表
     print("\n获取禁用词列表...")
-    forbidden_words = generator.get_forbidden_words()
+    forbidden_words = generator.load_forbidden_words()  # 修改这里
     print("当前禁用词：")
     for word in forbidden_words:
         print(f"词: {word['word']}, 分类: {word['category']}")
@@ -544,4 +321,3 @@ if __name__ == "__main__":
             print("等待3秒后重试...")
             time.sleep(3)
             continue
-
