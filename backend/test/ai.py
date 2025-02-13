@@ -13,7 +13,7 @@ class NicknameGenerator:
     def __init__(self):
         # 数据库配置
         self.db_config = {
-            'host': 'rm-2ze2gje6no17082upno.mysql.rds.aliyuncs.com',
+            'host': 'rm-2ze2gje6no17082up.mysql.rds.aliyuncs.com',
             'user': 'user',
             'password': 'gMpg4gnVJ+c',
             'database': 'user'
@@ -191,88 +191,102 @@ class NicknameGenerator:
             url = "http://127.0.0.1:11434/api/generate"
             prompt = f"""请生成{num_nicknames}个中文昵称，要求：
             1. 字数限制：3-12个字
-            2. 风格要求：简洁优雅，富有创意
-            3. 可选装饰：适当使用emoji表情
-            4. 禁止内容：
+            2. 风格要求：简洁优雅，富有创意,生成的昵称不要重复
+            3. 生成的昵称不能全部都是emoji
+            4. 可选装饰：适当使用emoji表情,颜文字等
+            5. 禁止内容：
                - 不使用英文字母和数字
                - 避免使用敏感词或不雅词汇
                - 不使用任何标点符号
                - 不使用以下词语及谐音：{forbidden_words_str}
 
             参考示例：
-            
-            
-            王者荣耀风格
-            ⚔️剑舞红尘
-            荣耀归来
-            🏹弓箭少女
-            无敌战神
-            🔥烈焰狂徒
-            疾风剑豪
-            🌟星辰之光
-            冷月无双
-            🛡️守护之刃
-            影舞者
-            
-            和平精英（吃鸡）风格
-            🎯神枪手
-            绝地求生
-            ⚡疾风狙击手
-            荣耀枪王
-            🌪️孤狼突击
-            黑夜猎手
-            🪖钢铁意志
-            狙击先锋
-            🔥火力全开
-            战地狂徒
-            
-            社交软件风格
-            🌸甜心教主
-            可爱多多
-            🎀萌系少女
-            高冷男神
-            💫闪耀之星
-            社交达人
-            🦋蝶舞翩翩
-            人间真香
-            ✨魅力超群
-            霸气小妞
-            
-            文艺清新风格
-            🍵茶香书韵
-            半窗疏影
-            🎋竹语浅歌
-            诗与橘子
-            🌊墨香书生
-            清风徐来
-            🎭戏子书生
-            云天墨客
-            📚书香门第
-            诗意江南
-            
-            日常生活风格
-            🥤可乐冰
-            暖阳小屋
-            🌞早安打工
-            摸鱼达人
-            ☕咖啡时光
-            宅家追剧
-            🍜美食猎人
-            睡到自然
-            🎵音乐达人
-            运动健将
-            
-            个性标签风格
-            💫追梦人
-            独行侠
-            🌊深海漫游
-            江湖故人
-            ⭐闪耀之星
-            孤独诗人
-            🎭戏精本精
-            自在如风
-            🎪马戏团长
-            浪漫主义
+
+
+            🔥 热门风格（结合当下流行元素）
+            🏀 篮球巨星
+            🎮 电竞王者
+            📱 科技达人
+            🍵 茶艺大师
+            🎵 音乐狂人
+            📚 知识博主
+            📸 摄影大师
+            🌍 旅行达人
+            🍜 美食探店
+            💰 理财高手
+
+            🌟 社交平台风格
+            🌸 甜心教主
+            🎀 萌系少女
+            💫 闪耀之星
+            🦋 蝶舞翩翩
+            ✨ 魅力超群
+            💎 高冷女神
+            👑 霸气小妞
+            🌈 彩虹女孩
+            🍀 幸运星
+            🌙 月光少女
+
+            🎭 个性标签风格
+            💫 追梦人
+            🌊 深海漫游
+            ⭐ 闪耀之星
+            🎪 马戏团长
+            🌪️ 疾风少年
+            🌌 星空旅者
+            🎨 艺术狂人
+            🔥 烈焰战士
+            🛡️ 守护骑士
+            🌿 自然之子
+
+            📖 文艺清新风格
+            🍵 茶香书韵
+            🎋 竹语浅歌
+            🌊 墨香书生
+            🎭 戏子书生
+            📚 书香门第
+            🌙 半窗疏影
+            🌿 清风徐来
+            🌸 诗意江南
+            🌾 田园诗人
+            ☁️ 云中漫步
+
+            🎮 游戏风格
+            ⚔️ 剑舞红尘
+            🏹 弓箭少女
+            🔥 烈焰狂徒
+            🌟 星辰之光
+            🛡️ 守护之刃
+            🎯 神枪手
+            ⚡ 疾风狙击手
+            🌪️ 孤狼突击
+            🪖 钢铁意志
+
+            🏆 竞技体育风格
+            🏅 金牌选手
+            ⚽ 足球巨星
+            🏸 羽毛球王
+            🏊 游泳健将
+            🏃 马拉松达人
+            🏋️ 健身狂魔
+            🚴 骑行高手
+            🥋 武术大师
+            🥊 拳击冠军
+            🏇 马术骑士
+
+            💼 职场精英风格
+            📊 数据分析师
+            💻 代码大师
+            📈 投资顾问
+            🎓 学术大咖
+            📝 文案高手
+            🎤 演讲达人
+            📦 供应链专家
+            📋 项目管理
+            📌 设计师
+            📅 时间管理
+
+
 
             请直接输出昵称，每行一个，确保：
             - 不加序号
@@ -336,31 +350,30 @@ class NicknameGenerator:
                 self.save_to_database(nicknames, "使用备选方法生成")
             return nicknames
 
-    def save_to_database(self, nicknames: List[str], model: str = "llama2"):
+    def save_to_database(self, nicknames: List[str], model: str = "llama2") -> None:
         """保存昵称到数据库"""
         try:
-            conn = mysql.connector.connect(**self.db_config)
-            cursor = conn.cursor()
+            # 获取当前时间
+            current_time = datetime.now()
+            successful_count = 0
+            failed_count = 0
 
+            # 准备插入语句
             insert_query = """
             INSERT INTO config_nickname (nickname, create_time, model, status, gender)
             VALUES (%s, %s, %s, %s, %s)
             """
 
-            current_time = datetime.now()
-            successful_count = 0
-            failed_count = 0
-
+            # 遍历昵称列表
             for nickname in nicknames:
                 try:
-                    values = (
-                        nickname,
-                        current_time,
-                        model,
-                        0,
-                        1
-                    )
-                    # print("nicknamenicknamenicknamenicknamenickname  ",nickname)
+                    # 检查昵称是否已存在
+                    if self.get_nickname(nickname):
+                        print(f"昵称 '{nickname}' 已存在，跳过")
+                        failed_count += 1
+                        continue
+
+                    # 调用外部 API 检查昵称合法性
                     url = "http://172.17.163.138:8081/internal/text/check"
                     payload = {
                         "body": nickname,
@@ -369,44 +382,41 @@ class NicknameGenerator:
                         "without_keyword": False,
                         "service": 2
                     }
-                    try:
-                        # 发起 POST 请求
-                        response = requests.post(url, json=payload)
-                        response.raise_for_status()  # 检查请求是否成功
+                    response = requests.post(url, json=payload)
+                    response.raise_for_status()  # 检查请求是否成功
 
-                        # 处理响应
-                        result = response.json()
-                        # print("响应结果:", result)
+                    # 处理响应
+                    result = response.json()
+                    category = result.get("data", {}).get("category", -1)  # 默认值为 -1，表示未找到
 
-                        # 检查 category 字段
-                        category = result.get("data").get("category",-1)  # 默认值为 -1，表示未找到
-                        if category == 0:
+                    # 如果 category 为 0，表示昵称合法
+                    if category == 0:
+                        values = (nickname, current_time, model, 0, 1)
+                        with self.db_connection() as conn:
+                            cursor = conn.cursor()
                             cursor.execute(insert_query, values)
-                            conn.commit()  # 每次插入后立即提交
+                            conn.commit()
                             successful_count += 1
-                        else:
-                            print("结果不正常",category,nickname)
-                    except requests.RequestException as e:
-                        print(f"请求错误: {e}")
+                    else:
+                        print(f"昵称 '{nickname}' 不合法，跳过 (category: {category})")
+                        failed_count += 1
+
+                except requests.RequestException as e:
+                    print(f"检查昵称 '{nickname}' 时发生请求错误: {e}")
+                    failed_count += 1
                 except mysql.connector.Error as insert_err:
                     if insert_err.errno == 1062:  # 重复键错误
+                        print(f"昵称 '{nickname}' 已存在，跳过")
                         failed_count += 1
-                       #  print(f"昵称 '{nickname}' 已存在，跳过")
-                        continue
                     else:
-                        # 其他类型的错误，打印错误信息并继续
-                        print(f"插入昵称 '{nickname}' 时发生错误: {insert_err}")
+                        print(f"插入昵称 '{nickname}' 时发生数据库错误: {insert_err}")
                         failed_count += 1
-                        continue
 
             print(f"处理完成：成功插入 {successful_count} 个昵称，失败 {failed_count} 个")
 
-        except mysql.connector.Error as err:
-            print(f"数据库连接错误: {err}")
-        finally:
-            if 'conn' in locals() and conn.is_connected():
-                cursor.close()
-                conn.close()
+        except Exception as e:
+            print(f"保存昵称到数据库时发生未知错误: {e}")
+
 
     def get_generated_nicknames(self, limit: int = 100) -> List[Dict]:
         """获取已生成的昵称列表"""
@@ -432,29 +442,35 @@ class NicknameGenerator:
                 cursor.close()
                 conn.close()
 
-    def delete_nickname(self, nickname_id: int):
-        """删除（软删除）指定昵称"""
+    def get_nickname(self, name: str) -> bool:
+        """通过 name 查询 user 表，判断是否存在匹配的记录"""
         try:
             conn = mysql.connector.connect(**self.db_config)
             cursor = conn.cursor()
 
-            update_query = """
-            UPDATE nicknames_ai 
-            SET status = 0 
-            WHERE id = %s
+            # 查询语句
+            query = """
+            SELECT COUNT(*) 
+            FROM user 
+            WHERE name = %s
             """
 
-            cursor.execute(update_query, (nickname_id,))
-            conn.commit()
+            # 执行查询
+            cursor.execute(query, (name,))
+            count = cursor.fetchone()[0]
 
-            print(f"成功删除昵称 ID: {nickname_id}")
+            # 如果 count > 0，说明存在匹配的记录
+            return count > 0
 
         except mysql.connector.Error as err:
-            print(f"删除昵称错误: {err}")
+            print(f"查询 user 表时发生错误: {err}")
+            return False  # 发生错误时返回 False
         finally:
             if 'conn' in locals() and conn.is_connected():
                 cursor.close()
                 conn.close()
+
+
 
     def get_forbidden_words(self) -> List[Dict]:
         """获取禁用词列表"""
@@ -528,3 +544,4 @@ if __name__ == "__main__":
             print("等待3秒后重试...")
             time.sleep(3)
             continue
+
