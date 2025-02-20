@@ -355,6 +355,7 @@ class NicknameGenerator:
 
     def delete_nickname(self, nickname_id: int):
         """删除（软删除）指定昵称并清除缓存"""
+        
         try:
             conn = mysql.connector.connect(**self.db_config)
             cursor = conn.cursor()

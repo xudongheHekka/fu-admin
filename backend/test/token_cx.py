@@ -109,7 +109,7 @@ if __name__ == "__main__":
     # test_generate_token()
 
     decrypted = AESUtil.decrypt(
-        "VYPbs4tYrSv8Vgalq8NcNBBwwqPtugJf7xF4Rsr5Hrk2zRYd1xg9uUuMEO5/w71g/hy5W6gAdhs0wL37Vbge/qGDKpxTywoSAHpNaas3lSM9MvyUwmr4tTQPjBHQTYQA",
+        "eyJsb2dpbl90aW1lIjoiMjAyNS0wMS0yN1QxMDo0Mzo1Ni4xNzU0Njg4NTIiLCJib2R5Ijoie1wib3NcIjpcIlwiLFwidmVyXCI6XCJcIn0iLCJvcyI6IlVOS05PV04iLCJ2ZXJzaW9uIjoiIiwiaXAiOiIyMjMuMTA0LjE5NS4xMjEiLCJjaGVja19iYW5uZWQiOmZhbHNlfQ",
         "75fa6cf7300033b477f5644110b8fcd7",
         "907AcdEf2fCb17fb"
     )
