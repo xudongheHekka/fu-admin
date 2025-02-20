@@ -3,7 +3,7 @@ from openai import OpenAI
 from datetime import datetime  # 导入 datetime 模块
 
 client = OpenAI(
-    api_key=os.getenv("DASHSCOPE_API_KEY"),  # 从环境变量获取 API Key
+    api_key=os.getenv("DASHSCOPE_API_KEY"),  # 从环境变量获取 API Key     sk-1eba476cc30e41eaa609220350f7d62c
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
