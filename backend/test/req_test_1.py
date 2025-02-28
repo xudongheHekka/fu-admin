@@ -12,8 +12,8 @@ from Crypto.Util.Padding import pad, unpad
 
 class BottleAPI:
     AES_CBC_ALGORITHM = 'AES/CBC/PKCS5PADDING'
-    TOKEN_KEY = b'358d71c554ae78914fece40609aad77b'
-    TOKEN_IV = b'F3a22EcceB2e0t13'
+    TOKEN_KEY = b'1ea5784f54e4fade7a83ddae369b35f9'
+    TOKEN_IV = b'91kdSke72h6naM2F'
     CONTENT_KEY = b'75fa6cf7300033b477f5644110b8fcd7'
     CONTENT_IV = b'907AcdEf2fCb17fb'
 
@@ -50,7 +50,7 @@ class BottleAPI:
     def send_message(self):
         try:
             # 加密token
-            token = '{"Uid":"11850"}'
+            token = '{"uid":"9880947"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             #盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
@@ -81,29 +81,32 @@ class BottleAPI:
             #     "umid": "bd9e85cdb1b1d1e2eb32c276bd16879f"
             # }
             request_body = {
-                "is_pirated": 0,
-                "idfa": "2F6D549E-4AE7-4360-9AEC-F80132D88485",
-                "ts": timestamp,
-                "is_nim": 1,
-                "req_rand": random.randint(1000, 9999),
-                "stid": "l8ir5/K+T4Hv0Y6zB2jU9w==",
-                "is_simulator": 0,
-                "app_id": "1",
-                "timet": 1737698294,
-                "os": "ios",
-                "os_ver": "16.1.1",
-                "udid": "60f1f09b42a58393ae7a322c3ddd05011b5aa415",
-                "appname": "bottle",
-                "ver": "7.10.0",
-                "token": encrypted_token,
-                "idfv": "30E1CAAB-9E37-45F9-9306-C70AA9C02004",
-                "is_jailbroken": 0,
-                "app_type": "1",
-                "p_model": "iPhone14,5",
-                "device_jb": 0,
-                "timew": 1737698294,
-                "umid": "bca74d94c291c3dbccd891289dfa40"
-            }
+                              "fid": "3898",
+                              "nonce": 4243881,
+                              "type": 2,
+                              "aid": "89836472497cd350",
+                              "app_id": 1,
+                              "app_type": 1,
+                              "de_type": 0,
+                              "dr_type": 0,
+                              "is_nim": 1,
+                              "market": "xiaomi",
+                              "oaid": "8d050f19b7630311",
+                              "os": "android",
+                              "os_ver": "15",
+                              "p_mftr": "xiaomi",
+                              "p_model": "23113RKC6C",
+                              "screen_height": 2310,
+                              "screen_width": 1080,
+                              "timet": 1740738309290,
+                              "timew": 1740738309290,
+                              "token": encrypted_token,
+                              "ts": timestamp,
+                              "umid": "07281c4b93d7c2d036f762828862f951od",
+                              "ver": "9.13.2",
+                              "yace": False,
+                              "ip": "182.118.238.81"
+                            }
 
             # 生成签名
             body_str = json.dumps(request_body)
@@ -116,7 +119,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/config/oss_token"
+            url = "https://api-meeting.weizhiyanchina.com/family/chat"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             with self.lock:
@@ -137,7 +140,7 @@ class BottleAPI:
             print(f"Thread {threading.current_thread().name} - Error: {e}")
             return None
 
-    def pressure_test(self, num_threads=10, duration=60):
+    def pressure_test(self, num_threads=1, duration=1):
         """
         进行压力测试
         :param num_threads: 并发线程数
@@ -177,4 +180,4 @@ class BottleAPI:
 if __name__ == "__main__":
     api = BottleAPI()
     # 设置并发线程数和测试时间
-    api.pressure_test(num_threads=10, duration=5)
+    api.pressure_test(num_threads=1, duration=5)
