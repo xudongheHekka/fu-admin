@@ -14,6 +14,9 @@ class BottleAPI:
     AES_CBC_ALGORITHM = 'AES/CBC/PKCS5PADDING'
     TOKEN_KEY = b'1ea5784f54e4fade7a83ddae369b35f9'
     TOKEN_IV = b'91kdSke72h6naM2F'
+    # 测试环境
+    # TOKEN_KEY = b'358d71c554ae78914fece40609aad77b'
+    # TOKEN_IV = b'F3a22EcceB2e0t13'
     CONTENT_KEY = b'75fa6cf7300033b477f5644110b8fcd7'
     CONTENT_IV = b'907AcdEf2fCb17fb'
 
