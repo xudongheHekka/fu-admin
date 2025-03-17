@@ -12,11 +12,11 @@ from Crypto.Util.Padding import pad, unpad
 
 class BottleAPI:
     AES_CBC_ALGORITHM = 'AES/CBC/PKCS5PADDING'
-    TOKEN_KEY = b'1ea5784f54e4fade7a83ddae369b35f9'
-    TOKEN_IV = b'91kdSke72h6naM2F'
+    # TOKEN_KEY = b'1ea5784f54e4fade7a83ddae369b35f9'
+    # TOKEN_IV = b'91kdSke72h6naM2F'
     # 测试环境
-    # TOKEN_KEY = b'358d71c554ae78914fece40609aad77b'
-    # TOKEN_IV = b'F3a22EcceB2e0t13'
+    TOKEN_KEY = b'358d71c554ae78914fece40609aad77b'
+    TOKEN_IV = b'F3a22EcceB2e0t13'
     CONTENT_KEY = b'75fa6cf7300033b477f5644110b8fcd7'
     CONTENT_IV = b'907AcdEf2fCb17fb'
 
@@ -59,30 +59,7 @@ class BottleAPI:
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
 
-            # request_body = {
-            #     "is_pirated": 0,
-            #     "idfa": "F7A12724-15EC-4A03-9379-13DED3C85DAC",
-            #     "is_nim": 1,
-            #     "req_rand": 7861,
-            #     "stid": "jdCqgB7AYoABoiKVzEw9yg==",
-            #     "is_simulator": 0,
-            #     "app_id": "1",
-            #     "timet": 1725706987,
-            #     "os": "ios",
-            #     "os_ver": "15.5",
-            #     "udid": "1e5bdf3a353f3f21d8aa9320631fea970418821f",
-            #     "appname": "bottle",
-            #     "ver": "7.9.9",
-            #     "token": encrypted_token,
-            #     "ts": timestamp,
-            #     "idfv": "0CEB3504-7A47-43F7-97E2-636508B2BF87",
-            #     "is_jailbroken": 0,
-            #     "app_type": "1",
-            #     "p_model": "iPhone8,1",
-            #     "device_jb": 0,
-            #     "timew": 1725706987,
-            #     "umid": "bd9e85cdb1b1d1e2eb32c276bd16879f"
-            # }
+
             request_body = {
                               "fid": "3898",
                               "nonce": 4243881,
@@ -122,7 +99,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://api-meeting.weizhiyanchina.com/family/chat"
+            url = "https://stage-api-meeting.weizhiyanchina.com/family/chat"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             with self.lock:
@@ -181,6 +158,7 @@ class BottleAPI:
 
 
 if __name__ == "__main__":
+
     api = BottleAPI()
     # 设置并发线程数和测试时间
     api.pressure_test(num_threads=1, duration=5)
