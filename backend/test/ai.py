@@ -78,35 +78,7 @@ class NicknameGenerator:
 
         return True
 
-    def generate_fallback_nicknames(self, num_nicknames=10) -> List[str]:
-        """备选的昵称生成方法"""
-        adjectives = ['快乐', '阳光', '可爱', '温柔', '智慧', '勇敢', '善良', '开心', '活力', '文艺',
-                      '清新', '淡雅', '俏皮', '调皮', '萌萌', '甜甜', '暖暖', '安静', '优雅', '灵动']
-        nouns = ['小猫', '花儿', '星星', '月亮', '彩虹', '蝴蝶', '小鸟', '微风', '海浪', '云朵',
-                 '糖果', '奶茶', '小熊', '兔子', '年华', '精灵', '童话', '蒲公英', '向日葵', '樱花']
-        emojis = ['🌟', '🌈', '🌺', '🎵', '💫', '🌸', '✨', '💕', '🍀', '🌙',
-                  '🎨', '🌹', '🎭', '🎪', '🎠', '🎡', '🎢', '🎣', '🎮', '🎯']
 
-        nicknames = []
-        while len(nicknames) < num_nicknames:
-            adj = random.choice(adjectives)
-            noun = random.choice(nouns)
-            emoji = random.choice(emojis)
-
-            # 随机组合方式
-            patterns = [
-                f"{adj}{noun}",
-                f"{adj}{noun}{emoji}",
-                f"{emoji}{adj}{noun}",
-                f"{noun}{emoji}",
-                f"{adj}{emoji}"
-            ]
-
-            nickname = random.choice(patterns)
-            if self.validate_nickname(nickname):
-                nicknames.append(nickname)
-
-        return nicknames
 
     def generate_nicknames(self, num_nicknames=10):
         """生成昵称"""
@@ -118,7 +90,7 @@ class NicknameGenerator:
             forbidden_words_list = [word['word'] for word in self.forbidden_words]
             forbidden_words_str = '、'.join(forbidden_words_list)
 
-            url = "http://127.0.0.1:11434/api/generate"
+            url = "http://192.168.0.128:11434/api/generate"
             prompt = f"""请生成 {num_nicknames} 个中文昵称，要求如下：
 
             ---

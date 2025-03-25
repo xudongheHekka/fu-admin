@@ -25,8 +25,8 @@ HEADERS = {
 #     "group_module": 1
 # }
 
-THREAD_COUNT = 2
-TEST_DURATION = 10  # 10分钟，单位：秒
+THREAD_COUNT = 5
+TEST_DURATION = 60  # 10分钟，单位：秒
 
 # 统计数据
 stats = {

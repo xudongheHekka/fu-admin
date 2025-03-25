@@ -17,8 +17,8 @@ PAYLOAD = {
     "amount": 10,
     "group_module": 1
 }
-THREAD_COUNT = 1
-TEST_DURATION = 6  # 10分钟，单位：秒
+THREAD_COUNT = 5
+TEST_DURATION = 60  # 10分钟，单位：秒
 
 # 统计数据
 stats = {

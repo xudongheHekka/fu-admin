@@ -2,21 +2,38 @@ import os
 from openai import OpenAI
 
 client = OpenAI(
-    # 请用知识引擎原子能力API Key将下行替换为：api_key="sk-xxx",
-    api_key="sk-fjnWvbJyVJp5twfKcA31jRnZOd060DlgzBwMdZFZbgTxuZ23", # 如何获取API Key：https://cloud.tencent.com/document/product/1772/115970
+    api_key="sk-fjnWvbJyVJp5twfKcA31jRnZOd060DlgzBwMdZFZbgTxuZ23",
     base_url="https://api.lkeap.cloud.tencent.com/v1",
 )
 
+# 用户可选择的风格类型
+style = "可爱萌系"  # 可以是：可爱萌系、活泼友善、暖心治愈、幽默逗趣、神秘奇幻等
+
 completion = client.chat.completions.create(
-    model="deepseek-r1",  # 此处以 deepseek-r1 为例，可按需更换模型名称。
+    model="hunyuan-turbo",
     messages=[
-        {'role': 'user', 'content': '有哪些让你颠覆三观的社会真相?社会不教,精英不说,有些东西没人点拨,你未必知道,普通人如何破局。说直白一点,通透一点,可以说脏话!'}
-        ]
+        {"role": "system", "content": f"""
+        你是一位创意十足的社交文案专家，专门为漂流瓶社交应用创作拟人化的打招呼文案。
+
+        请以"{style}"的风格，创作3条拟人化的打招呼文案。这些文案将被用作漂流瓶中的第一句话，
+        用来吸引陌生人的注意并开启愉快的对话。
+
+        文案要求：
+        1. 每条30-50字左右
+        2. 使用拟人化的语气，仿佛文字本身是有生命的
+        3. 活泼有趣，富有个性
+        4. 适合陌生人之间初次打招呼
+        5. 内容健康积极
+        6. 结尾可以带有简单的互动引导
+
+        直接输出文案内容，无需编号或其他格式。
+        """},
+
+        {"role": "user", "content": "请生成漂流瓶打招呼文案"}
+    ],
+    temperature=0.8,
+    max_tokens=500
 )
 
-# 通过reasoning_content字段打印思考过程
-print("思考过程：")
-print(completion.choices[0].message.reasoning_content)
-# 通过content字段打印最终答案
-print("最终答案：")
+print("生成的漂流瓶文案：")
 print(completion.choices[0].message.content)
