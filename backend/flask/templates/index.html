@@ -7,6 +7,56 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 15px;
+        }
+        input[type="text"], select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
         pre {
             background-color: #f4f4f4;
@@ -14,13 +64,34 @@
             padding: 10px;
             border-radius: 5px;
             overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .response-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 5px;
         }
     </style>
     <script>
+        const environments = {
+            "Staging": "https://stage-api-meeting.weizhiyanchina.com/room/gift",
+            "Production": "https://prod-api.example.com/endpoint"
+        };
+
+        // 切换环境时更新 API URL
+        function updateApiUrl() {
+            const environment = document.getElementById('environment-select').value;
+            document.getElementById('api-url').value = environments[environment];
+        }
+
         async function sendRequest() {
             const apiUrl = document.getElementById('api-url').value; // 获取接口地址
             const uid = document.getElementById('uid').value; // 获取用户输入的 UID
             const requestBody = document.getElementById('request-body').value;
+            const environment = document.getElementById('environment-select').value; // 获取环境选择
 
             if (!apiUrl) {
                 document.getElementById('response').innerHTML = "<span style='color: red;'>Error: API URL is required.</span>";
@@ -45,33 +116,43 @@
                     body: JSON.stringify({
                         api_url: apiUrl,
                         uid: uid, // 将 UID 传递给后端
-                        request_body: parsedBody
+                        request_body: parsedBody,
+                        environment: environment // 将环境参数传递给后端
                     })
                 });
 
                 const result = await response.json();
 
-                // 将 JSON 格式化后显示在 <pre> 标签中
+                // 将响应结果显示在页面上
                 document.getElementById('response').innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('response').innerHTML = `<span style='color: red;'>Error: ${error}</span>`;
+                document.getElementById('response').innerHTML = `<span style='color: red;'>Error: ${error.message}</span>`;
             }
         }
     </script>
 </head>
 <body>
-    <h1>Flask Admin API</h1>
-    <label for="api-url">API URL:</label>
-    <!-- 设置默认值 -->
-    <input type="text" id="api-url" placeholder="Enter API URL here..." size="80" value="https://stage-api-meeting.weizhiyanchina.com/room/gift">
-    <br><br>
-    <label for="uid">UID:</label>
-    <input type="text" id="uid" placeholder="Enter UID here..." size="80">
-    <br><br>
-    <textarea id="request-body" rows="20" cols="80" placeholder="Enter your JSON request body here..."></textarea>
-    <br><br>
-    <button onclick="sendRequest()">Send Request</button>
-    <h2>Response:</h2>
-    <div id="response"></div> <!-- 使用 <div> 来动态插入格式化的 JSON -->
+    <div class="container">
+        <h1>Flask Admin API</h1>
+        <label for="environment-select">Environment:</label>
+        <select id="environment-select" onchange="updateApiUrl()">
+            <option value="Staging">Staging</option>
+            <option value="Production">Production</option>
+        </select>
+
+        <label for="api-url">API URL:</label>
+        <input type="text" id="api-url" readonly>
+
+        <label for="uid">UID:</label>
+        <input type="text" id="uid" placeholder="Enter UID">
+
+        <label for="request-body">Request Body (JSON):</label>
+        <textarea id="request-body" rows="10" cols="50" placeholder='{"key": "value"}'></textarea>
+
+        <button onclick="sendRequest()">Send Request</button>
+
+        <h2>Response:</h2>
+        <div id="response" class="response-container"></div>
+    </div>
 </body>
 </html>

@@ -10,10 +10,21 @@ import requests
 app = Flask(__name__)
 
 class BottleAPI:
-    TOKEN_KEY = b'358d71c554ae78914fece40609aad77b'
-    TOKEN_IV = b'F3a22EcceB2e0t13'
-    CONTENT_KEY = b'75fa6cf7300033b477f5644110b8fcd7'
-    CONTENT_IV = b'907AcdEf2fCb17fb'
+    AES_CBC_ALGORITHM = 'AES/CBC/PKCS5PADDING'
+
+    def __init__(self, environment):
+        # 根据传递的环境参数加载不同的配置
+        if environment == 'Production':  # 生产环境
+            self.TOKEN_KEY = b'1ea5784f54e4fade7a83ddae369b35f9'
+            self.TOKEN_IV = b'91kdSke72h6naM2F'
+        elif environment == 'Staging':  # 测试环境
+            self.TOKEN_KEY = b'358d71c554ae78914fece40609aad77b'
+            self.TOKEN_IV = b'F3a22EcceB2e0t13'
+        else:
+            raise ValueError("Invalid environment. Only 'Staging' and 'Production' are supported.")
+
+        self.CONTENT_KEY = b'75fa6cf7300033b477f5644110b8fcd7'
+        self.CONTENT_IV = b'907AcdEf2fCb17fb'
 
     @staticmethod
     def encrypt(text: str, key: bytes, iv: bytes) -> str:
@@ -84,16 +95,18 @@ def index():
 @app.route('/send', methods=['POST'])
 def send():
     try:
-        # 获取用户输入的 request_body、API URL 和 UID
+        # 获取用户输入的 request_body、API URL、UID 和环境参数
         data = request.json
-        if not data or 'api_url' not in data or 'request_body' not in data or 'uid' not in data:
-            return jsonify({"status": "fail", "message": "API URL, request body, and UID are required"}), 400
+        if not data or 'api_url' not in data or 'request_body' not in data or 'uid' not in data or 'environment' not in data:
+            return jsonify({"status": "fail", "message": "API URL, request body, UID, and environment are required"}), 400
 
         api_url = data['api_url']
         request_body = data['request_body']
         uid = data['uid']  # 从前端获取 UID
+        environment = data['environment']  # 从前端获取环境参数
 
-        api = BottleAPI()
+        # 使用传递的环境参数初始化 BottleAPI
+        api = BottleAPI(environment=environment)
         result = api.send_message(api_url, request_body, uid)
         return jsonify(result)
     except Exception as e:
