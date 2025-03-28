@@ -362,6 +362,14 @@ def main():
 
 
 if __name__ == "__main__":
+
+
+    # print(len("🌲丽江湖畔😘成都955"))
+    # Python 模拟 Java 的长度
+    s = "🌲丽江湖畔😘成都955"
+    utf16_length = len(s.encode("utf-16-le")) // 2  # 每个代码单元占 2 个字节
+    print(utf16_length)  # 输出 13
+
     while True:
         try:
             print("\n" + "=" * 50)

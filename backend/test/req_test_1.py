@@ -47,7 +47,7 @@ class BottleAPI:
     def send_message(self):
         try:
             # 加密token
-            token = '{"uid":"9880947"}'
+            token = '{"uid":"11209523"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             # 盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
@@ -92,7 +92,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/room/gift"
+            url = "https://stage-api-meeting.weizhiyanchina.com/task/daily_list"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
