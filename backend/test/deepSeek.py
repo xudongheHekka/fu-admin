@@ -37,20 +37,22 @@ class DeepSeek:
         self.save_to_database(nicknames, "使用API生成")
         return nicknames
 
+
+
     def fetch_nicknames_from_api(self, num_nicknames):
         """从API获取昵称"""
         url = "http://192.168.0.128:11434/api/generate"
         prompt = (
-            f"请生成{num_nicknames}条文案，以下是要求："
-            "- 使用漂流瓶社交app，性别男，目标是吸引女性回复。"
-            "- 文案需简短（20字以内），避免使用字母。"
-            "- 不约见面，无性暗示，不涉及政治，不引用歌曲或影视作品。"
-            "示例文案风格："
-            "1. 想找个搭子，分享日常琐碎小事～"
-            "2. 今日份趣事超多，缺个倾听的你。"
-            "3. 好奇女生此刻，都在做什么呀？"
-            "4. 分享一首歌，开启奇妙聊天之旅。"
-            "5. 找个聊天搭子，治愈平淡小生活"
+            f"请生成{num_nicknames}条文案，要求如下：\n"
+            "- 使用漂流瓶社交app，目标是吸引女性回复，性别设定为男。\n"
+            "- 文案长度应在20到100字之间，避免使用字母。\n"
+            "- 不涉及约见面、性暗示、政治话题，且不引用歌曲或影视作品。\n"
+            "- 请尽可能贴近以下示例风格：\n"
+            "  1. 想找个搭子，分享日常琐碎小事～\n"
+            "  2. 今日份趣事超多，缺个倾听的你。\n"
+            "  3. 好奇女生此刻，都在做什么呀？\n"
+            "  4. 分享一首歌，开启奇妙聊天之旅。\n"
+            "  5. 找个聊天搭子，治愈平淡小生活。\n"
         )
 
         models = ["deepseek-r1:32b"]
@@ -72,10 +74,9 @@ class DeepSeek:
         result = response.json()
         text_response = result.get('response', '')
         cleaned_response = re.sub(r'<think>.*?</think>', '', text_response, flags=re.DOTALL)
+        print(cleaned_response)
         cleaned_response = cleaned_response.replace('好的!以下是 50 个符合您要求的中文昵称:', '').strip()
-
-        pattern = r'\d+\.\s+([\u4e00-\u9fa5]+)'
-        return re.findall(pattern, cleaned_response)
+        return [line.strip() for line in cleaned_response.splitlines() if line.strip()]
 
     def save_to_database(self, nicknames: List[str], model: str = "llama2") -> None:
         """保存昵称到数据库"""
@@ -93,17 +94,19 @@ class DeepSeek:
             #     failed_count += 1
             #     continue
 
+            nickname = re.sub(r'^\d+\.\s*', '', nickname)
             if self.is_nickname_valid(nickname):
                 gender_value = 1  # 假设性别值为1
                 values = (nickname, current_time, gender_value, 0)
-                with self.db_connection() as conn:
-                    cursor = conn.cursor()
-                    cursor.execute(insert_query, values)
-                    conn.commit()
-                successful_count += 1
-            else:
-                print(f"昵称 '{nickname}' 不合法，跳过")
-                failed_count += 1
+                try:
+                    with self.db_connection() as conn:
+                        cursor = conn.cursor()
+                        cursor.execute(insert_query, values)
+                        conn.commit()
+                    successful_count += 1
+                except mysql.connector.Error as err:
+                    print(f"插入昵称 '{nickname}' 时发生错误: {err}")
+                    failed_count += 1
 
         print(f"处理完成：成功插入 {successful_count} 个昵称，失败 {failed_count} 个")
 
