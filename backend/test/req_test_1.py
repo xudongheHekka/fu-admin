@@ -47,38 +47,14 @@ class BottleAPI:
     def send_message(self):
         try:
             # 加密token
-            token = '{"uid":"11209523"}'
+            token = '{"uid":"10787472"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             # 盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
 
             request_body = {
-                "fid": "3898",
-                "nonce": 4243881,
-                "type": 2,
-                "aid": "89836472497cd350",
-                "app_id": 1,
-                "app_type": 1,
-                "de_type": 0,
-                "dr_type": 0,
-                "is_nim": 1,
-                "market": "xiaomi",
-                "oaid": "8d050f19b7630311",
-                "os": "android",
-                "os_ver": "15",
-                "p_mftr": "xiaomi",
-                "p_model": "23113RKC6C",
-                "screen_height": 2310,
-                "screen_width": 1080,
-                "timet": 1740738309290,
-                "timew": 1740738309290,
-                "token": encrypted_token,
-                "ts": timestamp,
-                "umid": "07281c4b93d7c2d036f762828862f951od",
-                "ver": "9.13.2",
-                "yace": False,
-                "ip": "182.118.238.81"
+
             }
 
             # 生成签名
@@ -92,7 +68,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/task/daily_list"
+            url = "https://api-meeting.weizhiyanchina.com/config/voice/template"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
@@ -108,8 +84,21 @@ class BottleAPI:
             print(f"请求出错: {e}")
             return None
 
+def test_api_calls(api_instance, num_calls):
+    success_count = 0
+
+    for _ in range(num_calls):
+        if api_instance.send_message():
+            success_count += 1
+
+    success_rate = (success_count / num_calls) * 100
+    print(f"成功率: {success_rate:.2f}%")
+
+
+
 
 if __name__ == "__main__":
     api = BottleAPI()
     # 只发送一次请求
-    api.send_message()
+    #  api.send_message()
+    test_api_calls(api, 1)

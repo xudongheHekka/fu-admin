@@ -85,7 +85,7 @@ class AESUtil:
 
 # 测试代码
 def test_generate_token():
-    # 创建Token对象
+    # 创建Token对象，。、
     token = Token(uid=11809, login_type=1)
 
     # 将Token对象序列化为JSON字符串
