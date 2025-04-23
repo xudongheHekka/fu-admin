@@ -85,7 +85,7 @@ class DeepSeek:
         """保存昵称到数据库"""
         current_time = datetime.now()
         insert_query = """
-        INSERT INTO bottle_template_text_test (body, created_at, gender, deleted)
+        INSERT INTO bottle_template_text_man (body, created_at, gender, deleted)    
         VALUES (%s, %s, %s, %s)
         """
         successful_count = 0

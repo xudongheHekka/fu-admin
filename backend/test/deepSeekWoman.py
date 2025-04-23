@@ -82,7 +82,7 @@ class DeepSeek:
         """保存昵称到数据库"""
         current_time = datetime.now()
         insert_query = """
-        INSERT INTO bottle_template_text_test (body, created_at, gender, deleted)
+        INSERT INTO bottle_template_text_woman (body, created_at, gender, deleted)
         VALUES (%s, %s, %s, %s)
         """
         successful_count = 0
@@ -96,7 +96,7 @@ class DeepSeek:
 
             nickname = re.sub(r'^\d+\.\s*', '', nickname)
             if self.is_nickname_valid(nickname):
-                gender_value = 1  # 假设性别值为1
+                gender_value = 1  # 假设性别值为1  女性
                 values = (nickname, current_time, gender_value, 0)
                 try:
                     with self.db_connection() as conn:
