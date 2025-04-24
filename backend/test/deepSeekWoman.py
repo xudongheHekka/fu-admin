@@ -11,10 +11,10 @@ class DeepSeek:
     def __init__(self):
         # 数据库配置
         self.db_config = {
-            'host': 'rm-2ze2gje6no17082up.mysql.rds.aliyuncs.com',
-            'user': 'user',
-            'password': 'gMpg4gnVJ+c',
-            'database': 'user'
+            'host': 'z9m47xvaakc3v9ayzldn-rw4rm.rwlb.rds.aliyuncs.com',
+            'user': 'room',
+            'password': '693HNamTj1k',
+            'database': 'room'
         }
 
     @contextmanager
@@ -43,16 +43,16 @@ class DeepSeek:
         """从API获取昵称"""
         url = "http://192.168.0.128:11434/api/generate"
         prompt = (
-            f" -你是一位创意十足的社交文案专家，专门为使用社交应用的年轻男性创作拟人化的打招呼文案，文案会被发给女性，请生成{num_nicknames}条文案，要求如下：\n"
-            "- 使用漂流瓶社交app，目标是吸引女性回复，性别设定为男。\n"
-            "- 文案长度应在20到100字之间，避免使用字母。\n"
-            "- 不涉及约见面、性暗示、政治话题，且不引用歌曲或影视作品。\n"
-            "- 请尽可能贴近以下示例风格：\n"
-            "  1. 想找个搭子，分享日常琐碎小事～\n"
-            "  2. 今日份趣事超多，缺个倾听的你。\n"
-            "  3. 好奇女生此刻，都在做什么呀？\n"
-            "  4. 分享一首歌，开启奇妙聊天之旅。\n"
-            "  5. 找个聊天搭子，治愈平淡小生活。\n"
+            f" -你是一位创意十足的社交文案专家，专门为使用社交应用的年轻男性创作拟人化的打招呼文案，文案会被发给女性，请生成{num_nicknames}条文案，要求如下："
+            "- 使用漂流瓶社交app，目标是吸引女性回复"
+            "- 文案长度应在30字左右，避免使用字母。"
+            "- 不涉及约见面、性暗示、政治话题，且不引用歌曲或影视作品。"
+            "- 请尽可能贴近以下示例风格："
+            "  1. 想找个搭子，分享日常琐碎小事～"
+            "  2. 今日份趣事超多，缺个倾听的你。"
+            "  3. 好奇女生此刻，都在做什么呀？"
+            "  4. 分享一首歌，开启奇妙聊天之旅。"
+            "  5. 找个聊天搭子，治愈平淡小生活。"
         )
 
         models = ["deepseek-r1:32b"]
@@ -94,7 +94,8 @@ class DeepSeek:
             #     failed_count += 1
             #     continue
 
-            nickname = re.sub(r'^\d+\.\s*', '', nickname)
+            # nickname = re.sub(r'^\d+\.\s*', '', nickname)
+            nickname = re.sub(r'^\d+\.\s*|["“”]', '', nickname)
             if self.is_nickname_valid(nickname):
                 gender_value = 1  # 假设性别值为1  女性
                 values = (nickname, current_time, gender_value, 0)

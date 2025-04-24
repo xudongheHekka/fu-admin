@@ -47,15 +47,38 @@ class BottleAPI:
     def send_message(self):
         try:
             # 加密token
-            token = '{"uid":"10787472"}'
+            token = '{"uid":"10876458"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             # 盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
 
             request_body = {
-
-            }
+                                  "body": "交替的四季都在告诉你要向前走",
+                                  "con_type": 1,
+                                  "is_template": 1,
+                                  "adid": "",
+                                  "aid": "909cb4bacbe692ad",
+                                  "app_id": 1,
+                                  "app_type": 1,
+                                  "de_type": 0,
+                                  "dr_type": 0,
+                                  "is_nim": 1,
+                                  "market": "xiaomi",
+                                  "oaid": "4d6d3e6debd94c61",
+                                  "os": "android",
+                                  "os_ver": "14",
+                                  "p_mftr": "xiaomi",
+                                  "p_model": "M2011K2C",
+                                  "screen_height": 3007,
+                                  "screen_width": 1440,
+                                  "timet": 1745398399166,
+                                  "timew": 1745398399166,
+                                  "token": encrypted_token,
+                                  "ts": timestamp,
+                                  "umid": "32059cf77327f542dea350a1172d086cod",
+                                  "ver": "9.13.5"
+                                }
 
             # 生成签名
             body_str = json.dumps(request_body)
@@ -68,7 +91,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://api-meeting.weizhiyanchina.com/config/voice/template"
+            url = "https://stage-api-meeting.weizhiyanchina.com/bottle/throw"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
