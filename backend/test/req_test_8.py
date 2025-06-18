@@ -46,38 +46,37 @@ class BottleAPI:
 
     def send_message(self):
         try:
-            start_time = time.time()  # 记录开始时间
             # 加密token
-            token = '{"uid":"10876444"}'
+            token = '{"uid":"10876506"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             # 盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
-
             request_body = {
-                              "is_pirated": 0,
-                              "idfa": "CA4A7CA6-A71D-43D2-8D7A-52DC12934722",
-                              "ts": timestamp,
+                              "body": "海浪送来的瓶子，里面藏着我的小心思，你愿意打开看看吗111？",
+                              "con_type": 3,
+                              "is_template": 1,
+                              "adid": "",
+                              "aid": "909cb4bacbe692ad",
+                              "app_id": 1,
+                              "app_type": 1,
+                              "de_type": 0,
+                              "dr_type": 0,
                               "is_nim": 1,
-                              "req_rand": 5457,
-                              "stid": "1jpOS1YvXWXjjc0Xzqi1+w==",
-                              "is_simulator": 0,
-                              "app_id": "1",
-                              "timet": 1750224874,
-                              "os": "ios",
-                              "os_ver": "17.3.1",
-                              "udid": "c5e2def58cb6b3d3b2d28bdc9bce3936689acfcd",
-                              "appname": "bottle",
-                              "ver": "7.11.0",
+                              "market": "xiaomi",
+                              "oaid": "4d6d3e6debd94c61",
+                              "os": "android",
+                              "os_ver": "14",
+                              "p_mftr": "xiaomi",
+                              "p_model": "M2011K2C",
+                              "screen_height": 3007,
+                              "screen_width": 1440,
+                              "timet": 1746603394182,
+                              "timew": 1746603394182,
                               "token": encrypted_token,
-                              "idfv": "85DDD03F-02FA-4B7B-A8F9-D25EA785C6A0",
-                              "is_jailbroken": 0,
-                              "app_type": "1",
-                              # "np": "1743495761464",
-                              "p_model": "iPhone16,1",
-                              "device_jb": 0,
-                              "timew": 1750224874,
-                              "umid": "401b7b2769e32f6283bf05f996a69"
+                              "ts": timestamp,
+                              "ver": "9.13.5",
+                              "yi_dun_token": "z2uYARsb_NiG_6AGk-pzLxorebnozZXOx-ygFw=="
                             }
 
             # 生成签名
@@ -91,11 +90,9 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/post/recommend/hot"
+            url = "https://stage-api-meeting.weizhiyanchina.com/bottle/num"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
-            end_time = time.time()  # 记录结束时间
-            duration_ms = (end_time - start_time) * 1000
-            print(f"接口调用耗时: {duration_ms:.2f} ms")
+
             if response.status_code == 200:
                 # 解密响应数据
                 decrypted_response = self.decrypt(response.text, self.CONTENT_KEY, self.CONTENT_IV)
@@ -106,9 +103,6 @@ class BottleAPI:
                 return None
 
         except Exception as e:
-            end_time = time.time()  # 异常时也记录结束时间
-            duration_ms = (end_time - start_time) * 1000
-            print(f"接口调用耗时: {duration_ms:.2f} ms")
             print(f"请求出错: {e}")
             return None
 
@@ -129,4 +123,4 @@ if __name__ == "__main__":
     api = BottleAPI()
     # 只发送一次请求
     #  api.send_message()
-    test_api_calls(api, 1)
+    test_api_calls(api, 99999999999)
