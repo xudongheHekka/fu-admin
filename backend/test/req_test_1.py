@@ -44,7 +44,7 @@ class BottleAPI:
             print(f"Decryption error: {e}")
             return None
 
-    def send_message(self):
+    def send_message(self, np=None):
         try:
             start_time = time.time()  # 记录开始时间
             # 加密token
@@ -55,30 +55,32 @@ class BottleAPI:
             timestamp = int(time.time() * 1000)
 
             request_body = {
-                              "is_pirated": 0,
-                              "idfa": "CA4A7CA6-A71D-43D2-8D7A-52DC12934722",
-                              "ts": timestamp,
-                              "is_nim": 1,
-                              "req_rand": 5457,
-                              "stid": "1jpOS1YvXWXjjc0Xzqi1+w==",
-                              "is_simulator": 0,
-                              "app_id": "1",
-                              "timet": 1750224874,
-                              "os": "ios",
-                              "os_ver": "17.3.1",
-                              "udid": "c5e2def58cb6b3d3b2d28bdc9bce3936689acfcd",
-                              "appname": "bottle",
-                              "ver": "7.11.0",
-                              "token": encrypted_token,
-                              "idfv": "85DDD03F-02FA-4B7B-A8F9-D25EA785C6A0",
-                              "is_jailbroken": 0,
-                              "app_type": "1",
-                              # "np": "1743495761464",
-                              "p_model": "iPhone16,1",
-                              "device_jb": 0,
-                              "timew": 1750224874,
-                              "umid": "401b7b2769e32f6283bf05f996a69"
-                            }
+                "is_pirated": 0,
+                "idfa": "CA4A7CA6-A71D-43D2-8D7A-52DC12934722",
+                "ts": timestamp,
+                "is_nim": 1,
+                "req_rand": 5457,
+                "stid": "1jpOS1YvXWXjjc0Xzqi1+w==",
+                "is_simulator": 0,
+                "app_id": "1",
+                "timet": 1750224874,
+                "os": "ios",
+                "os_ver": "17.3.1",
+                "udid": "c5e2def58cb6b3d3b2d28bdc9bce3936689acfcd",
+                "appname": "bottle",
+                "ver": "7.11.0",
+                "token": encrypted_token,
+                "idfv": "85DDD03F-02FA-4B7B-A8F9-D25EA785C6A0",
+                "is_jailbroken": 0,
+                "app_type": "1",
+                "p_model": "iPhone16,1",
+                "device_jb": 0,
+                "timew": 1750224874,
+                "umid": "401b7b2769e32f6283bf05f996a69"
+            }
+            # 如果传入np参数，则添加到请求体中
+            if np:
+                request_body["np"] = np
 
             # 生成签名
             body_str = json.dumps(request_body)
@@ -104,13 +106,57 @@ class BottleAPI:
             else:
                 print(f"请求失败，状态码: {response.status_code}")
                 return None
-
         except Exception as e:
             end_time = time.time()  # 异常时也记录结束时间
             duration_ms = (end_time - start_time) * 1000
             print(f"接口调用耗时: {duration_ms:.2f} ms")
             print(f"请求出错: {e}")
             return None
+
+    def fetch_all_pages(self):
+        """流式分页请求，通过检查返回结果中是否存在np字段来判断是否继续获取下一页"""
+        page_num = 1
+        all_data = []
+        np = None
+
+        while True:
+            print(f"\n正在获取第 {page_num} 页数据...")
+            response = self.send_message(np)
+            
+            if not response:
+                print("请求失败，停止获取数据")
+                break
+
+            try:
+                response_data = json.loads(response)
+                print(f"当前页返回数据: {response_data}")
+                all_data.append(response_data)
+                
+                # 检查返回数据中是否存在np字段
+                if isinstance(response_data, dict):
+                    # 检查data字段中是否存在np
+                    if "data" in response_data and isinstance(response_data["data"], dict):
+                        data = response_data["data"]
+                        if "np" in data:
+                            next_np = data["np"]
+                            print(f"获取到下一页参数: {next_np}")
+                            np = next_np
+                            page_num += 1
+                            continue
+                    
+                    print("返回数据中没有np字段，分页结束")
+                    break
+                else:
+                    print("返回数据格式不正确，分页结束")
+                    break
+
+            except json.JSONDecodeError as e:
+                print(f"解析响应数据失败: {e}")
+                print(f"原始响应数据: {response}")
+                break
+
+        print(f"\n总共获取了 {page_num} 页数据")
+        return all_data
 
 def test_api_calls(api_instance, num_calls):
     success_count = 0
@@ -127,6 +173,5 @@ def test_api_calls(api_instance, num_calls):
 
 if __name__ == "__main__":
     api = BottleAPI()
-    # 只发送一次请求
-    #  api.send_message()
-    test_api_calls(api, 1)
+    # 获取所有分页数据
+    all_pages_data = api.fetch_all_pages()
