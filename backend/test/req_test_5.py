@@ -47,38 +47,41 @@ class BottleAPI:
     def send_message(self):
         try:
             # 加密token
-            token = '{"uid":"10876506"}'
+            token = '{"uid":"11209899"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             # 盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
             request_body = {
-                              "body": "海浪送来的瓶子，里面藏着我的小心思，你愿意打开看看吗111？",
-                              "con_type": 3,
-                              "is_template": 1,
-                              "adid": "",
-                              "aid": "909cb4bacbe692ad",
-                              "app_id": 1,
-                              "app_type": 1,
-                              "de_type": 0,
-                              "dr_type": 0,
-                              "is_nim": 1,
-                              "market": "xiaomi",
-                              "oaid": "4d6d3e6debd94c61",
-                              "os": "android",
-                              "os_ver": "14",
-                              "p_mftr": "xiaomi",
-                              "p_model": "M2011K2C",
-                              "screen_height": 3007,
-                              "screen_width": 1440,
-                              "timet": 1746603394182,
-                              "timew": 1746603394182,
-                              "token": encrypted_token,
-                              "ts": timestamp,
-                              "ver": "9.13.5",
-                              "yi_dun_token": "z2uYARsb_NiG_6AGk-pzLxorebnozZXOx-ygFw=="
-                            }
-
+                      "nickname": "❤️泰姬陵的秘密花园",
+                      "is_random_name": True,
+                      "gender": 1,
+                      "login_type": "1",
+                      "captcha_request": True,
+                      "capType": 1,
+                      "nid": 336965,
+                      "dx_token": "",
+                      "birthday": "1996-06-21",
+                      "os": "harmony",
+                      "country_code": "86",
+                      "aid": "46166ee15da1c069",
+                      "app_id": 1,
+                      "app_type": 1,
+                      "de_type": 0,
+                      "dr_type": 0,
+                      "is_nim": 1,
+                      "ver": "1.0.5",
+                      "stid": "CQKG64fbV5S3gDtwRxIXJg==\n",
+                      "adid": "3f01da5b71304e8688af0b0e9aa84ead",
+                      "market": "HUAWEI",
+                      "p_mftr": "HUAWEI",
+                      "p_model": "HUAWEI Mate X5",
+                      "os_ver": "17",
+                      "screen_height": 1080,
+                      "screen_width": 2504,
+                      "ts": timestamp,
+                      "token": encrypted_token
+                    }
             # 生成签名
             body_str = json.dumps(request_body)
             sign = hashlib.md5((body_str + salt).encode('utf-8')).hexdigest()
@@ -90,7 +93,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/bottle/num"
+            url = "https://stage-api-meeting.weizhiyanchina.com/user/register"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
@@ -123,4 +126,4 @@ if __name__ == "__main__":
     api = BottleAPI()
     # 只发送一次请求
     #  api.send_message()
-    test_api_calls(api, 99999999999)
+    test_api_calls(api, 1)

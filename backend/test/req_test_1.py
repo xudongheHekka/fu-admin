@@ -93,7 +93,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/post/recommend/hot"
+            url = "http://10.221.0.201:9999/post/recommend/hot"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
             end_time = time.time()  # 记录结束时间
             duration_ms = (end_time - start_time) * 1000
@@ -168,10 +168,36 @@ def test_api_calls(api_instance, num_calls):
     success_rate = (success_count / num_calls) * 100
     print(f"成功率: {success_rate:.2f}%")
 
+def thread_task(thread_id):
+    """线程任务函数"""
+    print(f"线程 {thread_id} 开始执行")
+    api = BottleAPI()
+    try:
+        all_pages_data = api.fetch_all_pages()
+        print(f"线程 {thread_id} 执行完成，获取到 {len(all_pages_data)} 页数据")
+    except Exception as e:
+        print(f"线程 {thread_id} 执行出错: {e}")
 
-
+def run_multi_thread_test(num_threads=20):
+    """运行多线程压测"""
+    print(f"开始 {num_threads} 个线程的压测...")
+    threads = []
+    
+    # 创建并启动线程
+    for i in range(num_threads):
+        thread = threading.Thread(target=thread_task, args=(i+1,))
+        threads.append(thread)
+        thread.start()
+        print(f"线程 {i+1} 已启动")
+    
+    # 等待所有线程完成
+    for i, thread in enumerate(threads):
+        thread.join()
+        print(f"线程 {i+1} 已结束")
+    
+    print("所有线程执行完成")
 
 if __name__ == "__main__":
-    api = BottleAPI()
-    # 获取所有分页数据
-    all_pages_data = api.fetch_all_pages()
+    # 运行20个线程的压测
+    while True:
+     run_multi_thread_test(20)
