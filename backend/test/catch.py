@@ -47,36 +47,34 @@ class BottleAPI:
     def send_message(self):
         try:
             # 加密token
-            token = '{"uid":"10876506"}'
+            token = '{"uid":"11210133"}'
             encrypted_token = self.encrypt(token, self.TOKEN_KEY, self.TOKEN_IV)
             # 盐
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
             request_body = {
-                              "body": "海浪送来的瓶子，里面藏着我的小心思，你愿意打开看看吗111？",
-                              "con_type": 3,
-                              "is_template": 1,
+                              "con_type": 2,
                               "adid": "",
-                              "aid": "909cb4bacbe692ad",
+                              "aid": "d3d93c55141299c4",
                               "app_id": 1,
                               "app_type": 1,
                               "de_type": 0,
                               "dr_type": 0,
                               "is_nim": 1,
-                              "market": "xiaomi",
-                              "oaid": "4d6d3e6debd94c61",
+                              "market": "samsung",
+                              "oaid": "ADF3EE5C564C42FC897022FAFA1B1356d231f2eaa4e3652014c1957436d3321e",
                               "os": "android",
-                              "os_ver": "14",
-                              "p_mftr": "xiaomi",
-                              "p_model": "M2011K2C",
-                              "screen_height": 3007,
-                              "screen_width": 1440,
-                              "timet": 1746603394182,
-                              "timew": 1746603394182,
+                              "os_ver": "11",
+                              "p_mftr": "oppo",
+                              "p_model": "PCGM00",
+                              "screen_height": 2340,
+                              "screen_width": 1080,
+                              "timet": 1751629793158,
+                              "timew": 1751629793158,
                               "token": encrypted_token,
                               "ts": timestamp,
-                              "ver": "9.13.5",
-                              "yi_dun_token": "z2uYARsb_NiG_6AGk-pzLxorebnozZXOx-ygFw=="
+                              "umid": "b7f64eee46831095ffc281c1817033d5od",
+                              "ver": "9.13.9"
                             }
 
             # 生成签名
@@ -90,7 +88,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/bottle/num"
+            url = "https://stage-api-meeting.weizhiyanchina.com/bottle/catch"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
