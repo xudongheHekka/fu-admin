@@ -123,4 +123,4 @@ if __name__ == "__main__":
     api = BottleAPI()
     # 只发送一次请求
     #  api.send_message()
-    test_api_calls(api, 99999999999)
+    test_api_calls(api, 1)

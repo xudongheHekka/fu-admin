@@ -53,35 +53,34 @@ class BottleAPI:
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
             request_body = {
-                      "nickname": "❤️泰姬陵的秘密花园",
-                      "is_random_name": True,
-                      "gender": 1,
-                      "login_type": "1",
-                      "captcha_request": True,
-                      "capType": 1,
-                      "nid": 336965,
-                      "dx_token": "",
-                      "birthday": "1996-06-21",
-                      "os": "harmony",
-                      "country_code": "86",
-                      "aid": "46166ee15da1c069",
-                      "app_id": 1,
-                      "app_type": 1,
-                      "de_type": 0,
-                      "dr_type": 0,
-                      "is_nim": 1,
-                      "ver": "1.0.5",
-                      "stid": "CQKG64fbV5S3gDtwRxIXJg==\n",
-                      "adid": "3f01da5b71304e8688af0b0e9aa84ead",
-                      "market": "HUAWEI",
-                      "p_mftr": "HUAWEI",
-                      "p_model": "HUAWEI Mate X5",
-                      "os_ver": "17",
-                      "screen_height": 1080,
-                      "screen_width": 2504,
-                      "ts": timestamp,
-                      "token": encrypted_token
-                    }
+                              "is_pirated": 0,
+                              "idfa": "00000000-0000-0000-0000-000000000000",
+                              "bid": "202507322976814",
+                              "ts": timestamp,
+                              "is_nim": 1,
+                              "req_rand": 9545,
+                              "stid": "T/omc0DpXoO9qB2Okv1LRw==",
+                              "is_simulator": 0,
+                              "app_id": "1",
+                              "timet": 1751701288,
+                              "os": "ios",
+                              "os_ver": "18.5",
+                              "udid": "51aff186c5415501d41a898d8781d32a7f115646",
+                              "appname": "bottle",
+                              "ver": "7.11.4",
+                              "nonce": 189535,
+                              "token": encrypted_token,
+                              "idfv": "77A91C46-52EF-43AE-9BA6-A9D208CEC323",
+                              "is_jailbroken": 0,
+                              "app_type": "1",
+                              "uid": "10876586",
+                              "body": "什么是新姿势",
+                              "type": 1,
+                              "p_model": "iPhone15,2",
+                              "timew": 1751701288,
+                              "device_jb": 0,
+                              "umid": "9429bc136b2290574bbc3a9252eb60b6"
+                            }
             # 生成签名
             body_str = json.dumps(request_body)
             sign = hashlib.md5((body_str + salt).encode('utf-8')).hexdigest()
@@ -93,7 +92,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/user/register"
+            url = "https://stage-api-meeting.weizhiyanchina.com/bottle/reply"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
