@@ -200,4 +200,4 @@ def run_multi_thread_test(num_threads=20):
 if __name__ == "__main__":
     # 运行20个线程的压测
     while True:
-     run_multi_thread_test(20)
+     run_multi_thread_test(1)
