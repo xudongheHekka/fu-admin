@@ -53,28 +53,29 @@ class BottleAPI:
             salt = "a920b7226ea0dac52158deca9baa0a5f"
             timestamp = int(time.time() * 1000)
             request_body = {
-                              "is_pirated": 0,
-                              "idfa": "8CF0E80C-FCB6-4AB3-B192-DD561671CDFB",
-                              "ts": timestamp,
+                              "rid": "178",
+                              "show_id": "11709",
+                              "adid": "",
+                              "aid": "909cb4bacbe692ad",
+                              "app_id": 1,
+                              "app_type": 1,
+                              "de_type": 0,
+                              "dr_type": 0,
                               "is_nim": 1,
-                              "req_rand": 7065,
-                              "stid": "L9Jg5gziGv480pXwnKR1SQ==",
-                              "is_simulator": 0,
-                              "app_id": "1",
-                              "timet": 1753321355,
-                              "os": "ios",
-                              "os_ver": "18.0",
-                              "udid": "64ed47be92e2c68708c827b740f1811b381d783b",
-                              "appname": "bottle",
-                              "ver": "7.11.5",
+                              "market": "samsung",
+                              "oaid": "4d6d3e6debd94c61",
+                              "os": "android",
+                              "os_ver": "14",
+                              "p_mftr": "xiaomi",
+                              "p_model": "M2011K2C",
+                              "screen_height": 3007,
+                              "screen_width": 1440,
+                              "timet": 1753321699734,
+                              "timew": 1753321699734,
                               "token": encrypted_token,
-                              "idfv": "2785732F-8EAD-4D97-904D-65C1180BCCD0",
-                              "is_jailbroken": 0,
-                              "app_type": "1",
-                              "p_model": "iPhone13,2",
-                              "device_jb": 0,
-                              "timew": 1753321356,
-                              "umid": "8b6a2085d828f2443ae6b76e18fd363"
+                              "ts": timestamp,
+                              "umid": "32059cf77327f542dea350a1172d086cod",
+                              "ver": "9.14.2"
                             }
                                                                     # 生成签名
             body_str = json.dumps(request_body)
@@ -87,7 +88,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/room/start"
+            url = "https://stage-api-meeting.weizhiyanchina.com/room/end"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
