@@ -57,7 +57,7 @@ class BottleAPI:
                               "idfa": "8CF0E80C-FCB6-4AB3-B192-DD561671CDFB",
                               "ts": timestamp,
                               "is_nim": 1,
-                              "req_rand": 10577,
+                              "req_rand": 4359,
                               "stid": "oRgWBdj6lB3UkNuP+UESgA==",
                               "is_simulator": 0,
                               "app_id": "1",
@@ -68,14 +68,13 @@ class BottleAPI:
                               "appname": "bottle",
                               "ver": "7.11.7",
                               "token": encrypted_token,
-                              "show_id": 11750,         ##  获取开播信息中的 show_id
+                              "show_id": 11746,
                               "idfv": "2785732F-8EAD-4D97-904D-65C1180BCCD0",
                               "is_jailbroken": 0,
                               "app_type": "1",
                               "p_model": "iPhone13,2",
                               "device_jb": 0,
-                              "timew": 1755056912,
-                              "rid": 233,
+                              "timew": 1755056914,
                               "umid": "8b6a2085d828f2443ae6b76e18fd363"
                             }
                                                                                                                                                                                     # 生成签名
@@ -89,7 +88,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/room/end"
+            url = "https://stage-api-meeting.weizhiyanchina.com/room/live/info"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
