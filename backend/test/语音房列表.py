@@ -54,27 +54,28 @@ class BottleAPI:
             timestamp = int(time.time() * 1000)
             request_body = {
                               "is_pirated": 0,
-                              "idfa": "5B0FF033-A55E-4839-B27E-213F559536B1",
+                              "idfa": "00000000-0000-0000-0000-000000000000",
                               "ts": timestamp,
                               "is_nim": 1,
-                              "req_rand": 9987,
-                              "stid": "/q5si++YkEKjIo5LhmwFCw==",
+                              "req_rand": 6023,
+                              "stid": "Pa3x3BXmOsBGMCV7AO+93Q==",
                               "is_simulator": 0,
                               "app_id": "1",
-                              "timet": 1755073161,
+                              "timet": 1755136067,
                               "os": "ios",
-                              "os_ver": "17.5.1",
-                              "udid": "ece9692e72d10ee7db757a9c4498a698a62bac53",
+                              "os_ver": "16.7.11",
+                              "udid": "1bceab388a95551a0e2a3609c085ec140ad31894",
                               "appname": "bottle",
-                              "ver": "7.11.7",
+                              "ver": "7.11.6",
                               "token": encrypted_token,
-                              "idfv": "83775D58-5FD3-495A-83C6-9B855C9C8C92",
+                              "type": 2,
+                              "idfv": "105B9CDA-CAAD-45EC-85DE-14A18641A812",
                               "is_jailbroken": 0,
                               "app_type": "1",
-                              "p_model": "iPhone14,3",
+                              "p_model": "iPhone10,2",
                               "device_jb": 0,
-                              "timew": 1755073160,
-                              "umid": "b85bda2554cca0be72ff6718e7bbfa"
+                              "timew": 1755136068,
+                              "umid": "108bd384b0e8a763191ab9fccaa5af1"
                             }
                                                                                                                                                                                                                 # 生成签名
             body_str = json.dumps(request_body)
@@ -87,7 +88,7 @@ class BottleAPI:
             }
 
             # 发送请求
-            url = "https://stage-api-meeting.weizhiyanchina.com/user/task/list"
+            url = "https://stage-api-meeting.weizhiyanchina.com/room/list"
             response = requests.post(url, json=request_body, headers=headers, timeout=10)
 
             if response.status_code == 200:
